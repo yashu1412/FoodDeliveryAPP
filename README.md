@@ -117,18 +117,7 @@ This will create:
 
 ---
 
-## 🔐 Default Login Credentials
-
-| Role | Email | Password |
-|------|-------|----------|
-| Admin | admin@yashpalsingh.com | admin123 |
-| Owner | yashpalsinghpawara@gmail.com | owner123 |
-| Rider | delivery@yashpalsingh.com | rider123 |
-| Customer | customer@yashpalsingh.com | customer123 |
-
----
-
-## 📱 Pages & Features
+##  Pages & Features
 
 ### 🏠 Home Page
 - Hero banner
