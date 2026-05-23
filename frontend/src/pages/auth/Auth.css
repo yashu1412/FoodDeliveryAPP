@@ -1,0 +1,151 @@
+.auth-page {
+  min-height: 100vh;
+  background-color: var(--color-bg-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+.auth-content {
+  width: 100%;
+  max-width: 440px;
+}
+
+.auth-card {
+  padding: 2.5rem;
+}
+
+.auth-header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.auth-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  text-decoration: none;
+}
+
+.auth-logo-icon {
+  width: 48px;
+  height: 48px;
+  background-color: var(--color-primary);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+}
+
+.auth-logo-text {
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: var(--color-primary);
+}
+
+.auth-tagline {
+  font-size: 1rem;
+  color: var(--color-text-secondary);
+}
+
+.auth-form {
+  position: relative;
+}
+
+.auth-title {
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin-bottom: 1.5rem;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 0;
+  bottom: 8.5rem;
+  color: var(--color-text-muted);
+  padding: 0.5rem;
+  transition: color var(--transition-fast);
+}
+
+.toggle-password:hover {
+  color: var(--color-text-primary);
+}
+
+.auth-links {
+  margin: 1rem 0 1.5rem;
+  text-align: right;
+}
+
+.forgot-password {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-primary);
+  transition: color var(--transition-fast);
+}
+
+.forgot-password:hover {
+  color: var(--color-primary-dark);
+}
+
+.auth-button {
+  width: 100%;
+  gap: 0.5rem;
+}
+
+.auth-divider {
+  display: flex;
+  align-items: center;
+  margin: 2rem 0;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background-color: var(--color-border);
+}
+
+.auth-divider-text {
+  padding: 0 1rem;
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+}
+
+.google-button {
+  width: 100%;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.google-icon {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: #db4437;
+}
+
+.auth-footer {
+  text-align: center;
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+}
+
+.auth-link {
+  font-weight: 600;
+  color: var(--color-primary);
+  transition: color var(--transition-fast);
+}
+
+.auth-link:hover {
+  color: var(--color-primary-dark);
+}

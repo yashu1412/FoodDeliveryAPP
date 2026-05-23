@@ -1,0 +1,300 @@
+.home {
+  min-height: 100vh;
+  background-color: var(--color-bg);
+}
+
+.home-content {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding-top: 5rem;
+}
+
+.hero {
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
+  padding: 4rem 1.5rem;
+  margin: 0 -1.5rem;
+}
+
+.hero-content {
+  max-width: 600px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.hero-title {
+  font-family: var(--font-display);
+  font-size: 3rem;
+  font-weight: 800;
+  color: var(--color-text-inverse);
+  margin-bottom: 0.5rem;
+}
+
+.hero-subtitle {
+  font-size: 1.25rem;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 2rem;
+}
+
+.hero-search {
+  display: flex;
+  gap: 1rem;
+  background-color: var(--color-bg);
+  padding: 0.5rem;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-spice);
+}
+
+.hero-search-icon {
+  color: var(--color-text-muted);
+  margin-left: 0.5rem;
+}
+
+.hero-search-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  padding: 0.5rem;
+  font-size: 1rem;
+  outline: none;
+}
+
+.hero-search-button {
+  white-space: nowrap;
+}
+
+.categories {
+  padding: 2rem 0;
+}
+
+.categories-scroll {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  padding: 0 1.5rem;
+  scrollbar-width: none;
+}
+
+.categories-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.category-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 1.5rem;
+  background-color: var(--color-bg-muted);
+  border-radius: var(--radius-lg);
+  min-width: 100px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.category-chip:hover {
+  background-color: var(--color-primary-50);
+  transform: translateY(-2px);
+}
+
+.category-emoji {
+  font-size: 2rem;
+}
+
+.category-name {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+.section {
+  padding: 2rem 1.5rem;
+}
+
+.section-title {
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin-bottom: 1.5rem;
+}
+
+.restaurants-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.restaurant-card-wrapper {
+  text-decoration: none;
+}
+
+.restaurant-card {
+  overflow: hidden;
+  transition: all var(--transition-normal);
+}
+
+.restaurant-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+.restaurant-image-container {
+  position: relative;
+  height: 200px;
+}
+
+.restaurant-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--transition-normal);
+}
+
+.restaurant-card:hover .restaurant-image {
+  transform: scale(1.05);
+}
+
+.restaurant-status {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+}
+
+.restaurant-info {
+  padding: 1.5rem;
+}
+
+.restaurant-name {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.restaurant-cuisines {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.cuisine-badge {
+  font-size: 0.75rem;
+}
+
+.restaurant-details {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.detail-item {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+}
+
+.detail-icon {
+  color: var(--color-primary);
+}
+
+.dishes-scroll {
+  display: flex;
+  gap: 1.5rem;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+  scrollbar-width: none;
+}
+
+.dishes-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.dish-card {
+  min-width: 200px;
+  position: relative;
+}
+
+.dish-image-container {
+  position: relative;
+  height: 160px;
+}
+
+.dish-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+
+.veg-indicator {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  width: 16px;
+  height: 16px;
+  border-radius: 2px;
+}
+
+.veg-indicator.veg {
+  background-color: var(--color-accent-green);
+}
+
+.veg-indicator.non-veg {
+  background-color: var(--color-accent-red);
+}
+
+.dish-info {
+  padding: 1rem;
+}
+
+.dish-name {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: 0.25rem;
+}
+
+.dish-price {
+  font-family: var(--font-display);
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.dish-add-button {
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
+  width: 36px;
+  height: 36px;
+  background-color: var(--color-primary);
+  color: var(--color-text-inverse);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+}
+
+.dish-add-button:hover {
+  background-color: var(--color-primary-dark);
+  transform: scale(1.1);
+}
+
+@media (max-width: 768px) {
+  .hero-title {
+    font-size: 2rem;
+  }
+
+  .hero-subtitle {
+    font-size: 1rem;
+  }
+
+  .restaurants-grid {
+    grid-template-columns: 1fr;
+  }
+}
