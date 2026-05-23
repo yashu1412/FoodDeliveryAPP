@@ -4,29 +4,31 @@
 }
 
 .restaurant-card:hover {
-  box-shadow: var(--shadow-spice);
+  box-shadow: var(--shadow-spice-xl);
 }
 
 .restaurant-card-image-container {
   position: relative;
   height: 200px;
+  overflow: hidden;
 }
 
 .restaurant-card-image {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform var(--transition-normal);
+  transition: transform var(--transition-slow);
 }
 
 .restaurant-card:hover .restaurant-card-image {
-  transform: scale(1.05);
+  transform: scale(1.08);
 }
 
 .restaurant-card-status {
   position: absolute;
   top: 1rem;
   left: 1rem;
+  box-shadow: var(--shadow-sm);
 }
 
 .restaurant-card-info {
@@ -50,6 +52,7 @@
 
 .restaurant-card-cuisine-badge {
   font-size: 0.75rem;
+  box-shadow: var(--shadow-xs);
 }
 
 .restaurant-card-details {

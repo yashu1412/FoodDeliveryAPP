@@ -1,11 +1,17 @@
 .dish-card {
   min-width: 200px;
   position: relative;
+  overflow: hidden;
+}
+
+.dish-card:hover {
+  box-shadow: var(--shadow-spice);
 }
 
 .dish-card-image-container {
   position: relative;
   height: 160px;
+  overflow: hidden;
 }
 
 .dish-card-image {
@@ -13,6 +19,11 @@
   height: 100%;
   object-fit: cover;
   border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  transition: transform var(--transition-slow);
+}
+
+.dish-card:hover .dish-card-image {
+  transform: scale(1.1);
 }
 
 .dish-card-veg-indicator {
@@ -22,6 +33,7 @@
   width: 16px;
   height: 16px;
   border-radius: 2px;
+  box-shadow: var(--shadow-sm);
 }
 
 .dish-card-veg-indicator.veg {
@@ -54,18 +66,26 @@
   position: absolute;
   bottom: 1rem;
   right: 1rem;
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   background-color: var(--color-primary);
   color: var(--color-text-inverse);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all var(--transition-fast);
+  transition: all var(--transition-bounce);
+  box-shadow: var(--shadow-spice);
+  border: none;
+  cursor: pointer;
 }
 
 .dish-card-add:hover {
   background-color: var(--color-primary-dark);
-  transform: scale(1.1);
+  transform: scale(1.15);
+  box-shadow: var(--shadow-spice-xl);
+}
+
+.dish-card-add:active {
+  transform: scale(1.05);
 }
