@@ -5,6 +5,9 @@ import RestaurantDetail from './pages/RestaurantDetail'
 import Login from './pages/auth/Login'
 import Signup from './pages/auth/Signup'
 import Cart from './pages/Cart'
+import Checkout from './pages/Checkout'
+import OrderTracking from './pages/OrderTracking'
+import OrderHistory from './pages/OrderHistory'
 import OwnerDashboard from './pages/OwnerDashboard'
 import RiderDashboard from './pages/RiderDashboard'
 import AdminDashboard from './pages/AdminDashboard'
@@ -19,6 +22,9 @@ function App() {
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
       <Route path="/cart" element={<Cart />} />
+      <Route path="/checkout" element={<Checkout />} />
+      <Route path="/orders" element={<OrderHistory />} />
+      <Route path="/orders/:id/track" element={<OrderTracking />} />
       
       <Route path="/owner-dashboard" element={
         <ProtectedRoute allowedRoles={["owner"]}>

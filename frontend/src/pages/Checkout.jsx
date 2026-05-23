@@ -1,223 +1,220 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Footer from "../components/Footer";
-import { useAppContext } from "../context/AppContext";
-import { apiRequest } from "../utils/api";
-import { loadScript } from "../utils/loadScript";
+import { MapPin, CreditCard, Wallet, ArrowRight } from "lucide-react";
+import Navbar from "../components/layout/Navbar";
+import Card from "../components/ui/Card";
+import Button from "../components/ui/Button";
+import Input from "../components/ui/Input";
+import "./Checkout.css";
 
-const initialAddress = {
-  fullName: "",
-  phone: "",
-  line1: "",
-  line2: "",
-  city: "",
-  state: "",
-  pincode: "",
-  country: "India",
-  latitude: "",
-  longitude: "",
-};
+const mockCartItems = [
+  { id: "1", name: "Paneer Tikka", price: 220, quantity: 2 },
+  { id: "2", name: "Butter Naan", price: 50, quantity: 3 },
+];
+
+const mockAddresses = [
+  {
+    id: "1",
+    type: "Home",
+    address: "123 Main Street, Pune, Maharashtra 411001",
+    phone: "+91 9359028987",
+  },
+  {
+    id: "2",
+    type: "Work",
+    address: "456 Business Park, Pune, Maharashtra 411014",
+    phone: "+91 9359028987",
+  },
+];
 
 export default function Checkout() {
   const navigate = useNavigate();
-  const { user, refreshCartCount } = useAppContext();
-  const [cartData, setCartData] = useState(null);
-  const [deliveryAddress, setDeliveryAddress] = useState({
-    ...initialAddress,
-    fullName: user?.fullName || "",
-    phone: user?.mobile || "",
+  const [selectedAddress, setSelectedAddress] = useState(mockAddresses[0].id);
+  const [paymentMethod, setPaymentMethod] = useState("razorpay");
+  const [newAddress, setNewAddress] = useState({
+    type: "Home",
+    address: "",
+    phone: "",
   });
-  const [loading, setLoading] = useState(true);
-  const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState("");
+  const [showNewAddressForm, setShowNewAddressForm] = useState(false);
 
-  useEffect(() => {
-    const fetchCart = async () => {
-      try {
-        setLoading(true);
-        const data = await apiRequest("/cart");
-        setCartData(data);
-      } catch (apiError) {
-        setError(apiError.message);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const subtotal = mockCartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const deliveryFee = 30;
+  const tax = Math.round(subtotal * 0.05);
+  const total = subtotal + deliveryFee + tax;
 
-    fetchCart();
-  }, []);
-
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    setDeliveryAddress((prev) => ({ ...prev, [name]: value }));
+  const handlePlaceOrder = () => {
+    navigate("/orders/1/track");
   };
-
-  const normalizedAddress = {
-    ...deliveryAddress,
-    latitude: deliveryAddress.latitude ? Number(deliveryAddress.latitude) : null,
-    longitude: deliveryAddress.longitude ? Number(deliveryAddress.longitude) : null,
-  };
-
-  const handleCashOnDelivery = async () => {
-    try {
-      setSubmitting(true);
-      setError("");
-      const data = await apiRequest("/orders/cod", {
-        method: "POST",
-        body: JSON.stringify({
-          deliveryAddress: normalizedAddress,
-        }),
-      });
-
-      refreshCartCount();
-      navigate(`/orders?created=${data.order._id}`);
-    } catch (apiError) {
-      setError(apiError.message);
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-  const handleRazorpayCheckout = async () => {
-    try {
-      setSubmitting(true);
-      setError("");
-      await loadScript("https://checkout.razorpay.com/v1/checkout.js", "razorpay-checkout-script");
-
-      const data = await apiRequest("/payments/razorpay/order", {
-        method: "POST",
-        body: JSON.stringify({
-          deliveryAddress: normalizedAddress,
-        }),
-      });
-
-      const options = {
-        key: data.razorpayKey,
-        amount: data.razorpayOrder.amount,
-        currency: data.razorpayOrder.currency,
-        name: "Vingo Food Delivery",
-        description: "Checkout Payment",
-        order_id: data.razorpayOrder.id,
-        handler: async (response) => {
-          try {
-            await apiRequest("/payments/razorpay/verify", {
-              method: "POST",
-              body: JSON.stringify({
-                orderId: data.order._id,
-                ...response,
-              }),
-            });
-
-            refreshCartCount();
-            navigate(`/orders?created=${data.order._id}`);
-          } catch (verifyError) {
-            setError(verifyError.message);
-          }
-        },
-        prefill: {
-          name: normalizedAddress.fullName,
-          email: user?.email,
-          contact: normalizedAddress.phone,
-        },
-        theme: {
-          color: "#ff4d2d",
-        },
-      };
-
-      const paymentObject = new window.Razorpay(options);
-      paymentObject.open();
-    } catch (apiError) {
-      setError(apiError.message);
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-  const items = cartData?.cart?.items || [];
 
   return (
-    <>
-      <main className="min-h-screen bg-gray-50 px-4 py-24">
-        <div className="max-w-6xl mx-auto">
-          <h1 className="text-3xl font-bold mb-2">Checkout</h1>
-          <p className="text-gray-600 mb-6">Add your address and place the order with COD or Razorpay.</p>
+    <div className="checkout">
+      <Navbar />
 
-          {error && <p className="mb-4 text-sm text-red-600">{error}</p>}
+      <div className="checkout-content">
+        <h1 className="checkout-title">Checkout</h1>
 
-          {loading ? (
-            <div className="bg-white rounded-2xl p-8 shadow-sm">Loading checkout...</div>
-          ) : items.length === 0 ? (
-            <div className="bg-white rounded-2xl p-8 shadow-sm">Your cart is empty.</div>
-          ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-6">
-              <section className="bg-white rounded-2xl p-6 shadow-sm">
-                <h2 className="text-xl font-semibold mb-4">Delivery Address</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {Object.entries(deliveryAddress).map(([key, value]) => (
+        <div className="checkout-grid">
+          <div className="checkout-left">
+            <Card className="address-section">
+              <h2 className="section-title">
+                <MapPin size={20} />
+                Delivery Address
+              </h2>
+              <div className="address-list">
+                {mockAddresses.map((addr) => (
+                  <label
+                    key={addr.id}
+                    className={`address-item ${selectedAddress === addr.id ? "selected" : ""}`}
+                  >
                     <input
-                      key={key}
-                      name={key}
-                      value={value}
-                      onChange={handleChange}
-                      placeholder={key.replace(/([A-Z])/g, " $1")}
-                      className={`rounded border border-gray-300 p-3 ${
-                        key === "line1" || key === "line2" ? "md:col-span-2" : ""
-                      }`}
+                      type="radio"
+                      name="address"
+                      value={addr.id}
+                      checked={selectedAddress === addr.id}
+                      onChange={() => setSelectedAddress(addr.id)}
                     />
-                  ))}
-                </div>
-              </section>
-
-              <aside className="bg-white rounded-2xl p-6 shadow-sm h-fit">
-                <h2 className="text-xl font-semibold mb-4">Order Summary</h2>
-                <div className="space-y-3 mb-5">
-                  {items.map((item) => (
-                    <div key={item.menuItem} className="flex justify-between text-sm">
-                      <span>
-                        {item.name} x {item.quantity}
-                      </span>
-                      <span>Rs. {item.price * item.quantity}</span>
+                    <div className="address-details">
+                      <span className="address-type">{addr.type}</span>
+                      <p className="address-text">{addr.address}</p>
+                      <p className="address-phone">{addr.phone}</p>
                     </div>
-                  ))}
+                  </label>
+                ))}
+              </div>
+
+              <button
+                className="add-address-button"
+                onClick={() => setShowNewAddressForm(!showNewAddressForm)}
+              >
+                {showNewAddressForm ? "Cancel" : "+ Add New Address"}
+              </button>
+
+              {showNewAddressForm && (
+                <div className="new-address-form">
+                  <Input
+                    label="Address Type"
+                    placeholder="Home/Work"
+                    value={newAddress.type}
+                    onChange={(e) => setNewAddress({ ...newAddress, type: e.target.value })}
+                  />
+                  <Input
+                    label="Complete Address"
+                    placeholder="Enter your full address"
+                    value={newAddress.address}
+                    onChange={(e) => setNewAddress({ ...newAddress, address: e.target.value })}
+                  />
+                  <Input
+                    label="Phone Number"
+                    placeholder="+91 9999999999"
+                    value={newAddress.phone}
+                    onChange={(e) => setNewAddress({ ...newAddress, phone: e.target.value })}
+                  />
+                  <Button>Save Address</Button>
                 </div>
-                <div className="space-y-2 border-t border-gray-200 pt-4">
-                  <div className="flex justify-between">
-                    <span>Items Total</span>
-                    <span>Rs. {cartData.pricing?.itemsTotal || 0}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Delivery Fee</span>
-                    <span>Rs. {cartData.pricing?.deliveryFee || 0}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Tax</span>
-                    <span>Rs. {cartData.pricing?.taxAmount || 0}</span>
-                  </div>
-                  <div className="flex justify-between font-bold text-lg pt-2">
-                    <span>Total</span>
-                    <span>Rs. {cartData.pricing?.grandTotal || 0}</span>
-                  </div>
-                </div>
-                <button
-                  onClick={handleRazorpayCheckout}
-                  disabled={submitting}
-                  className="w-full mt-5 rounded-lg bg-[#ff4d2d] py-3 text-white font-semibold disabled:opacity-70"
+              )}
+            </Card>
+
+            <Card className="payment-section">
+              <h2 className="section-title">
+                <CreditCard size={20} />
+                Payment Method
+              </h2>
+              <div className="payment-methods">
+                <label
+                  className={`payment-method ${paymentMethod === "razorpay" ? "selected" : ""}`}
                 >
-                  {submitting ? "Processing..." : "Pay with Razorpay"}
-                </button>
-                <button
-                  onClick={handleCashOnDelivery}
-                  disabled={submitting}
-                  className="w-full mt-3 rounded-lg border border-[#ff4d2d] py-3 text-[#ff4d2d] font-semibold disabled:opacity-70"
+                  <input
+                    type="radio"
+                    name="payment"
+                    value="razorpay"
+                    checked={paymentMethod === "razorpay"}
+                    onChange={() => setPaymentMethod("razorpay")}
+                  />
+                  <div className="payment-details">
+                    <div className="payment-icon">
+                      <Wallet size={20} />
+                    </div>
+                    <div>
+                      <span className="payment-name">Razorpay</span>
+                      <span className="payment-desc">UPI, Cards, Netbanking</span>
+                    </div>
+                  </div>
+                </label>
+
+                <label
+                  className={`payment-method ${paymentMethod === "cod" ? "selected" : ""}`}
                 >
-                  Cash on Delivery
-                </button>
-              </aside>
-            </div>
-          )}
+                  <input
+                    type="radio"
+                    name="payment"
+                    value="cod"
+                    checked={paymentMethod === "cod"}
+                    onChange={() => setPaymentMethod("cod")}
+                  />
+                  <div className="payment-details">
+                    <div className="payment-icon">
+                      💵
+                    </div>
+                    <div>
+                      <span className="payment-name">Cash on Delivery</span>
+                      <span className="payment-desc">Pay when you receive</span>
+                    </div>
+                  </div>
+                </label>
+              </div>
+            </Card>
+          </div>
+
+          <div className="checkout-right">
+            <Card className="order-summary">
+              <h2 className="section-title">Order Summary</h2>
+              
+              <div className="summary-items">
+                {mockCartItems.map((item) => (
+                  <div key={item.id} className="summary-item">
+                    <span className="summary-item-name">
+                      {item.quantity}x {item.name}
+                    </span>
+                    <span className="summary-item-price">₹{item.price * item.quantity}</span>
+                  </div>
+                ))}
+              </div>
+
+              <div className="summary-divider"></div>
+
+              <div className="summary-row">
+                <span>Item Total</span>
+                <span>₹{subtotal}</span>
+              </div>
+              <div className="summary-row">
+                <span>Delivery Fee</span>
+                <span>₹{deliveryFee}</span>
+              </div>
+              <div className="summary-row">
+                <span>Taxes (5%)</span>
+                <span>₹{tax}</span>
+              </div>
+              
+              <div className="summary-divider"></div>
+
+              <div className="summary-row total">
+                <span>Total</span>
+                <span>₹{total}</span>
+              </div>
+
+              <Button
+                size="lg"
+                className="place-order-button"
+                onClick={handlePlaceOrder}
+              >
+                Place Order
+                <ArrowRight size={18} />
+              </Button>
+            </Card>
+          </div>
         </div>
-      </main>
-      <Footer />
-    </>
+      </div>
+    </div>
   );
 }

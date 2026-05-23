@@ -1,0 +1,243 @@
+.order-tracking {
+  min-height: 100vh;
+  background-color: var(--color-bg-soft);
+}
+
+.tracking-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 6rem 1.5rem 3rem;
+}
+
+.tracking-title {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin-bottom: 2rem;
+}
+
+.tracking-grid {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 2rem;
+}
+
+.tracking-left {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.status-section {
+  margin-bottom: 1rem;
+}
+
+.estimated-time {
+  margin-top: 1.5rem;
+  text-align: center;
+}
+
+.time-text {
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: var(--color-primary);
+  margin-left: 0.5rem;
+}
+
+.section-title {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.map-section,
+.rider-section,
+.order-summary {
+  padding: 1.5rem;
+}
+
+.map-placeholder {
+  height: 400px;
+  background: linear-gradient(135deg, var(--color-primary-50) 0%, var(--color-bg-muted) 100%);
+  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  position: relative;
+}
+
+.map-content {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.map-pin {
+  font-size: 3rem;
+  animation: bounce 1s infinite;
+}
+
+.rider-pin {
+  color: var(--color-primary);
+}
+
+.destination-pin {
+  color: var(--color-accent-red);
+}
+
+.map-text {
+  position: absolute;
+  bottom: 1rem;
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+}
+
+.rider-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.rider-details {
+  flex: 1;
+}
+
+.rider-name {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: 0.25rem;
+}
+
+.rider-rating {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+}
+
+.call-button {
+  width: 48px;
+  height: 48px;
+  background-color: var(--color-primary);
+  color: var(--color-text-inverse);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+}
+
+.call-button:hover {
+  background-color: var(--color-primary-dark);
+  transform: scale(1.05);
+}
+
+.tracking-right {
+  position: sticky;
+  top: 6rem;
+  height: fit-content;
+}
+
+.restaurant-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.restaurant-thumb {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+}
+
+.restaurant-name {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.items-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem;
+  background-color: var(--color-bg-muted);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  transition: background-color var(--transition-fast);
+}
+
+.items-toggle:hover {
+  background-color: var(--color-primary-50);
+}
+
+.order-items {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.order-item {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.875rem;
+  color: var(--color-text-primary);
+}
+
+.item-name {
+  color: var(--color-text-primary);
+}
+
+.item-price {
+  color: var(--color-text-secondary);
+  font-weight: 600;
+}
+
+.summary-divider {
+  height: 1px;
+  background-color: var(--color-border);
+  margin: 1.5rem 0;
+}
+
+.summary-row.total {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  margin-bottom: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+}
+
+.view-orders-button {
+  width: 100%;
+}
+
+@media (max-width: 1024px) {
+  .tracking-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .tracking-right {
+    position: static;
+  }
+
+  .map-placeholder {
+    height: 300px;
+  }
+}
