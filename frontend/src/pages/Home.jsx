@@ -122,7 +122,7 @@ export default function Home() {
           <h2 className="section-title">Top Restaurants Near You</h2>
           <div className="restaurants-grid">
             {displayRestaurants.map((restaurant) => (
-              <Link key={restaurant._id} to={`/services`} className="restaurant-card-wrapper">
+              <Link key={restaurant._id} to={`/restaurant/${restaurant._id}`} className="restaurant-card-wrapper">
                 <Card className="restaurant-card">
                   <div className="restaurant-image-container">
                     <img
