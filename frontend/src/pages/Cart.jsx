@@ -14,7 +14,7 @@ const mockCartItems = [
     name: "Paneer Tikka",
     price: 220,
     quantity: 2,
-    restaurantName: "Vingo Bistro",
+    restaurantName: "SwiftEats Bistro",
     image: "https://images.unsplash.com/photo-1563379926898-05f4575a45d8?w=200&q=80",
   },
   {
@@ -22,7 +22,7 @@ const mockCartItems = [
     name: "Butter Naan",
     price: 50,
     quantity: 3,
-    restaurantName: "Vingo Bistro",
+    restaurantName: "SwiftEats Bistro",
     image: "https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=200&q=80",
   },
 ];

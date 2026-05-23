@@ -81,7 +81,7 @@ export default function Contact() {
               <option hidden value="">
                 How can we help you?
               </option>
-              <option value="1">I need help with my Vingo online order.</option>
+              <option value="1">I need help with my SwiftEats online order.</option>
               <option value="2">
                 I found incorrect/outdated information on a page.
               </option>
@@ -155,7 +155,7 @@ export default function Contact() {
                 Report a Safety Emergency
               </h3>
               <p className="text-gray-600 mt-2">
-                We are committed to the safety of everyone using Vingo.
+                We are committed to the safety of everyone using SwiftEats.
               </p>
               <a
                 href="/report"

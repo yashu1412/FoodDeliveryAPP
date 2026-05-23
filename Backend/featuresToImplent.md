@@ -939,4 +939,4 @@ Backend/
 
 ---
 
-*Generated for Food Delivery Vingo App — Advanced Monolithic System Design*
+*Generated for Food Delivery SwiftEats App — Advanced Monolithic System Design*

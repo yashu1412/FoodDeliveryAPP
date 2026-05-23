@@ -60,7 +60,7 @@ const seedData = async () => {
     console.log("Users created successfully!");
 
     const restaurant = await Restaurant.create({
-      name: "Vingo Bistro",
+      name: "SwiftEats Bistro",
       owner: createdUsers[1]._id,
       description: "Delicious Indian and Continental food",
       cuisine: ["Indian", "Continental", "Desserts"],

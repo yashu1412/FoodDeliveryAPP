@@ -11,7 +11,7 @@ const mockOrders = [
   {
     _id: "1",
     restaurant: {
-      name: "Vingo Bistro",
+      name: "SwiftEats Bistro",
       image: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=200&q=80",
     },
     items: [
@@ -38,7 +38,7 @@ const mockOrders = [
   {
     _id: "3",
     restaurant: {
-      name: "Vingo Bistro",
+      name: "SwiftEats Bistro",
       image: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=200&q=80",
     },
     items: [

@@ -27,7 +27,7 @@ export default function Navbar() {
           <div className="w-10 h-10 bg-[#ff4d2d] rounded-full flex items-center justify-center text-white font-bold text-xl">
             V
           </div>
-          <span className="text-xl font-semibold text-[#ff4d2d]">Vingo</span>
+          <span className="text-xl font-semibold text-[#ff4d2d]">SwiftEats</span>
         </Link>
 
         <ul className="hidden md:flex gap-8 text-gray-700 font-medium">

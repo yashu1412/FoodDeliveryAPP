@@ -8,7 +8,7 @@ import "./RestaurantDetail.css";
 
 const mockRestaurant = {
   _id: "1",
-  name: "Vingo Bistro",
+  name: "SwiftEats Bistro",
   image: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1200&q=80",
   cuisine: ["Indian", "Continental"],
   rating: 4.5,

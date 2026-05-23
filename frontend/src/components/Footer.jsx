@@ -16,7 +16,7 @@ export default function Footer() {
           <div className="w-10 h-10 bg-[#ff4d2d] rounded-full flex items-center justify-center text-white font-bold text-xl">
             V
           </div>
-          <span className="text-xl font-semibold text-[#ff4d2d]">Vingo</span>
+          <span className="text-xl font-semibold text-[#ff4d2d]">SwiftEats</span>
         </a>
 
           <p className="text-gray-300 text-sm leading-relaxed mt-4">

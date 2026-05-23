@@ -11,10 +11,10 @@ export default function About() {
         {/* Right Side Content */}
         <div>
           <h2 className="text-4xl font-extrabold mb-4 text-[#ff4d2d]">
-            About Vingo Food
+            About SwiftEats Food
           </h2>
           <p className="text-gray-700 leading-relaxed mb-6">
-            Vingo Food is your perfect destination for delicious, hygienic and 
+            SwiftEats Food is your perfect destination for delicious, hygienic and 
             freshly prepared meals delivered right to your doorstep. We combine 
             premium ingredients with rich flavors to offer food that not only 
             tastes amazing but also nourishes your soul.
