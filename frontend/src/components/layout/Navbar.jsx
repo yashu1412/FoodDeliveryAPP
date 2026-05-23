@@ -66,8 +66,8 @@ export default function Navbar() {
             className="mobile-menu-button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
-            {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />
-          </button>
+            {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}\
+            </button>
         </div>
       </div>
 

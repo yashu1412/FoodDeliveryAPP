@@ -26,11 +26,11 @@ export default function Footer() {
           <h3 className="text-[#ff4d2d] font-semibold mt-6 mb-2">Contact Us</h3>
           <div className="flex items-center gap-3 text-gray-300">
             <FiPhoneCall className="text-[#ff4d2d] text-xl" />
-            <p>+91 9359028987</p>
+            <p>+91 9876543210</p>
           </div>
           <div className="flex items-center gap-3 text-gray-300 mt-2">
             <IoMdMail className="text-[#ff4d2d] text-xl" />
-            <p>yashpalsinghpawara@gmail.com</p>
+            <p>contact@swifteats.com</p>
           </div>
         </div>
 

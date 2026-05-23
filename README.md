@@ -353,7 +353,6 @@ This project is licensed under the MIT License.
 
 **Yashpalsingh Pawara**
 - Email: yashpalsinghpawara@gmail.com
-- Phone: +91 9359028987
 
 ---
 
