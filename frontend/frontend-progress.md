@@ -1,6 +1,6 @@
 # SwiftEats Frontend Progress
 
-## ✅ Completed Work (≈ 75%)
+## ✅ Completed Work (≈ 80%)
 
 ### 🎨 Design System & Styles
 - [x] CSS Variables (colors, spacing, shadows, radius, fonts)
@@ -24,17 +24,17 @@
 ### 🏗️ Layout Components
 - [x] Navbar (SwiftEats branded: logo, location, search, cart, user menu)
 - [x] Sidebar (owner/delivery sidebar)
-- [ ] BottomNav (mobile bottom navigation)
+- [x] BottomNav (mobile bottom navigation)
 
 ### 🏠 Pages Implemented
 - [x] Home Page (Hero banner, category chips, top restaurants, popular dishes)
 - [x] Login Page (SwiftEats branded auth card with email/password, Google, forgot password)
+- [x] Signup Page (role selector, form, SwiftEats design)
 - [x] Cart Page (cart items, order summary, coupon input, empty state)
 - [ ] Restaurant Detail Page
 - [ ] Checkout Page
 - [ ] Order Tracking Page
 - [ ] Order History Page
-- [ ] Signup Page
 - [x] Owner Dashboard (basic structure with tabs)
 - [x] Rider Dashboard (basic structure with availability toggle)
 - [x] Admin Dashboard (basic structure with stats)
