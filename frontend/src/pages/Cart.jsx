@@ -31,11 +31,21 @@ export default function Cart() {
   const [items, setItems] = useState(mockCartItems);
   const [coupon, setCoupon] = useState("");
   const [couponApplied, setCouponApplied] = useState(false);
+  const [appliedCoupon, setAppliedCoupon] = useState(null);
 
   const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const deliveryFee = 30;
   const tax = Math.round(subtotal * 0.05);
-  const discount = couponApplied ? 50 : 0;
+  
+  let discount = 0;
+  if (couponApplied && appliedCoupon) {
+    if (appliedCoupon === "WELCOME10") {
+      discount = Math.min(subtotal * 0.1, 50);
+    } else if (appliedCoupon === "FLAT50") {
+      discount = 50;
+    }
+  }
+  
   const total = subtotal + deliveryFee + tax - discount;
 
   const handleUpdateQty = (itemId, qty) => {
@@ -50,7 +60,9 @@ export default function Cart() {
   };
 
   const handleApplyCoupon = () => {
-    if (coupon.toUpperCase() === "WELCOME10") {
+    const code = coupon.toUpperCase().trim();
+    if (code === "WELCOME10" || code === "FLAT50") {
+      setAppliedCoupon(code);
       setCouponApplied(true);
     }
   };
