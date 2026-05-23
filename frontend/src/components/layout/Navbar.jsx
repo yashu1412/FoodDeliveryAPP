@@ -27,7 +27,7 @@ export default function Navbar() {
 
         <div className="navbar-location">
           <MapPin size={18} className="location-icon" />
-          <span className="location-text">Pune, Maharashtra</span>
+          <span className="location-text">Select Location</span>
         </div>
 
         <div className="navbar-search">
