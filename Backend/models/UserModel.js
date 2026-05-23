@@ -32,7 +32,7 @@ const UserSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ['user', 'owner', 'deliveryBoy'],
+      enum: ['user', 'owner', 'deliveryBoy', 'admin'],
       default: 'user',
     },
     authProvider: {
@@ -51,6 +51,10 @@ const UserSchema = new mongoose.Schema(
     passwordResetOtp: {
       code: String,
       expiresAt: Date,
+    },
+    isAvailable: {
+      type: Boolean,
+      default: true,
     },
   },
   { timestamps: true }
