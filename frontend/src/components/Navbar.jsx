@@ -104,6 +104,21 @@ export default function Navbar() {
                 <Link to="/cart" onClick={() => setOpen(false)}>
                   Cart ({cartCount})
                 </Link>
+                {user?.role === "owner" && (
+                  <Link to="/owner-dashboard" onClick={() => setOpen(false)}>
+                    Owner Dashboard
+                  </Link>
+                )}
+                {user?.role === "deliveryBoy" && (
+                  <Link to="/rider-dashboard" onClick={() => setOpen(false)}>
+                    Rider Dashboard
+                  </Link>
+                )}
+                {user?.role === "admin" && (
+                  <Link to="/admin-dashboard" onClick={() => setOpen(false)}>
+                    Admin Dashboard
+                  </Link>
+                )}
                 <button
                   onClick={() => {
                     setOpen(false);
