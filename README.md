@@ -351,7 +351,7 @@ This project is licensed under the MIT License.
 
 ## 👤 Author
 
-**Yashpal Singh Pawara**
+**Yashpalsingh Pawara**
 - Email: yashpalsinghpawara@gmail.com
 - Phone: +91 9359028987
 
@@ -363,4 +363,4 @@ Special thanks to all open-source contributors!
 
 ---
 
-*Built with ❤️ by Yashpal Singh Pawara*
+*Built with ❤️ by Yashpalsingh Pawara*

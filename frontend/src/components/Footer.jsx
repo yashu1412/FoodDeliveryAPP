@@ -94,7 +94,7 @@ export default function Footer() {
 
         {/* Copyright */}
         <p className="text-gray-400 text-sm">
-          © 2025 Yashpal Singh Pawara. All Rights Reserved.
+          © 2025 Yashpalsingh Pawara. All Rights Reserved.
         </p>
 
         {/* Back to top */}

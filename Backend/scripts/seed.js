@@ -30,7 +30,7 @@ const seedData = async () => {
         isEmailVerified: true,
       },
       {
-        fullName: "Yashpal Singh Pawara",
+        fullName: "Yashpalsingh Pawara",
         email: "yashpalsinghpawara@gmail.com",
         password: await bcrypt.hash("owner123", 10),
         mobile: "9359028987",
