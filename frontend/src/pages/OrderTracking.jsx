@@ -1,5 +1,5 @@
 import { useParams, Link } from "react-router-dom";
-import { Phone, Map as MapIcon, Package, ChevronDown, ChevronUp } from "lucide-react";
+import { Phone, Map as MapIcon, Package, ChevronDown, Clock, Bike } from "lucide-react";
 import { useState, useEffect } from "react";
 import { io } from "socket.io-client";
 import { api, API_BASE_URL } from "../utils/api";
@@ -14,6 +14,16 @@ import Spinner from "../components/ui/Spinner";
 import "./OrderTracking.css";
 
 const isValidMongoId = (value) => /^[a-f\d]{24}$/i.test(value);
+
+const statusLabels = {
+  pending: "Pending",
+  confirmed: "Confirmed",
+  preparing: "Preparing",
+  picked: "Picked up",
+  on_the_way: "On the way",
+  delivered: "Delivered",
+  cancelled: "Cancelled",
+};
 
 export default function OrderTracking() {
   const { id } = useParams();
@@ -86,7 +96,7 @@ export default function OrderTracking() {
         <Navbar />
         <div className="loading-container">
           <Spinner size="lg" />
-          <p>Loading order details...</p>
+          <p>Loading your order...</p>
         </div>
       </div>
     );
@@ -100,7 +110,7 @@ export default function OrderTracking() {
           <h2>Unable to load tracking</h2>
           <p>{error}</p>
           <Link to="/orders">
-            <Button>View All Orders</Button>
+            <Button size="lg">View All Orders</Button>
           </Link>
         </div>
       </div>
@@ -112,16 +122,17 @@ export default function OrderTracking() {
       <div className="order-tracking">
         <Navbar />
         <div className="error-container">
-          <h2>Order Not Found</h2>
+          <h2>Order not found</h2>
           <Link to="/orders">
-            <Button>View All Orders</Button>
+            <Button size="lg">View All Orders</Button>
           </Link>
         </div>
       </div>
     );
   }
 
-  const rider = order.deliveryPartner
+  const hasRider = Boolean(order.deliveryPartner);
+  const rider = hasRider
     ? {
         name: order.deliveryPartner.fullName,
         phone: order.deliveryPartner.mobile,
@@ -129,37 +140,47 @@ export default function OrderTracking() {
         rating: 4.8,
       }
     : {
-        name: "Assigning rider...",
+        name: "Finding your rider",
         phone: "",
         avatar: "",
         rating: null,
       };
 
-  const estimatedTime = order.estimatedDeliveryTime
-    ? `${Math.max(0, Math.ceil((new Date(order.estimatedDeliveryTime) - new Date()) / 60000))} mins`
-    : "30 mins";
+  const estimatedMins = order.estimatedDeliveryTime
+    ? Math.max(0, Math.ceil((new Date(order.estimatedDeliveryTime) - new Date()) / 60000))
+    : 30;
 
   const orderLabel = String(order._id).slice(-6).toUpperCase();
   const restaurantLocation = order.restaurant?.location;
+  const statusLabel = statusLabels[order.status] || order.status;
 
   return (
     <div className="order-tracking">
       <Navbar />
 
       <div className="tracking-content">
-        <h1 className="tracking-title">Order #{orderLabel}</h1>
+        <header className="tracking-header">
+          <div className="tracking-title-row">
+            <h1 className="tracking-title">Order #{orderLabel}</h1>
+            <p className="tracking-subtitle">Live updates · {order.items?.length || 0} items</p>
+          </div>
+          <span className="tracking-status-badge">{statusLabel}</span>
+        </header>
 
         <div className="tracking-grid">
           <div className="tracking-left">
-            <div className="status-section">
+            <Card className="tracking-panel status-section">
               <StatusStepper currentStatus={order.status} />
               <div className="estimated-time">
-                <span>⏱️</span>
-                <span className="time-text">{estimatedTime} away</span>
+                <Clock className="estimated-time-icon" size={28} strokeWidth={2.5} color="var(--primary)" />
+                <div>
+                  <p className="time-text">{estimatedMins} mins</p>
+                  <p className="time-label">estimated arrival</p>
+                </div>
               </div>
-            </div>
+            </Card>
 
-            <Card className="map-section">
+            <Card className="tracking-panel map-section">
               <h2 className="section-title">
                 <MapIcon size={20} />
                 Live Tracking
@@ -169,28 +190,37 @@ export default function OrderTracking() {
               </div>
             </Card>
 
-            <Card className="rider-section">
-              <h2 className="section-title">Your Rider</h2>
-              <div className="rider-info">
-                <Avatar
-                  src={rider.avatar}
-                  initials={
-                    rider.name
-                      ? rider.name
-                          .split(" ")
-                          .map((n) => n[0])
-                          .join("")
-                      : "AR"
-                  }
-                  size="lg"
-                />
+            <Card className="tracking-panel rider-section">
+              <h2 className="section-title">
+                <Bike size={20} />
+                Your Rider
+              </h2>
+              <div className={`rider-info ${!hasRider ? "rider-info--pending" : ""}`}>
+                <div className="rider-avatar-wrap">
+                  <Avatar
+                    src={rider.avatar}
+                    initials={
+                      rider.name
+                        ? rider.name
+                            .split(" ")
+                            .map((n) => n[0])
+                            .join("")
+                            .slice(0, 2)
+                        : "?"
+                    }
+                    size="lg"
+                  />
+                </div>
                 <div className="rider-details">
                   <h3 className="rider-name">{rider.name}</h3>
-                  {rider.rating && <p className="rider-rating">⭐ {rider.rating}</p>}
+                  {rider.rating && <p className="rider-rating">⭐ {rider.rating} rating</p>}
+                  {!hasRider && (
+                    <p className="rider-status-hint">We&apos;ll notify you when a rider is assigned</p>
+                  )}
                 </div>
                 {rider.phone && (
-                  <a href={`tel:${rider.phone}`} className="call-button">
-                    <Phone size={18} />
+                  <a href={`tel:${rider.phone}`} className="call-button" aria-label="Call rider">
+                    <Phone size={20} />
                   </a>
                 )}
               </div>
@@ -198,7 +228,7 @@ export default function OrderTracking() {
           </div>
 
           <div className="tracking-right">
-            <Card className="order-summary">
+            <Card className="tracking-panel order-summary">
               <h2 className="section-title">
                 <Package size={20} />
                 Order Details
@@ -206,8 +236,8 @@ export default function OrderTracking() {
 
               <div className="restaurant-info">
                 <img
-                  src={order.restaurant?.image || "https://placehold.co/600x400?text=Restaurant"}
-                  alt={order.restaurant?.name}
+                  src={order.restaurant?.image || "https://placehold.co/120x120?text=R"}
+                  alt=""
                   className="restaurant-thumb"
                 />
                 <div>
@@ -217,17 +247,21 @@ export default function OrderTracking() {
                 </div>
               </div>
 
-              <div className="items-toggle" onClick={() => setShowItems(!showItems)}>
+              <button
+                type="button"
+                className={`items-toggle ${showItems ? "open" : ""}`}
+                onClick={() => setShowItems(!showItems)}
+              >
                 <span>Order Items ({order.items?.length || 0})</span>
-                {showItems ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
-              </div>
+                <ChevronDown size={18} />
+              </button>
 
               {showItems && (
                 <div className="order-items">
                   {(order.items || []).map((item, index) => (
                     <div key={index} className="order-item">
                       <span className="item-name">
-                        {item.quantity}x {item.name}
+                        {item.quantity}× {item.name}
                       </span>
                       <span className="item-price">₹{item.price * item.quantity}</span>
                     </div>
@@ -239,7 +273,7 @@ export default function OrderTracking() {
 
               <div className="summary-row total">
                 <span>Total</span>
-                <span>₹{order.pricing?.grandTotal || order.total || 0}</span>
+                <span key={order.pricing?.grandTotal}>₹{order.pricing?.grandTotal || 0}</span>
               </div>
 
               <Link to="/orders">

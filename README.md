@@ -91,10 +91,14 @@ cd frontend
 npm install
 ```
 
-Create a `.env` file in `frontend/`:
+Create a `.env` file in `frontend/` (see `frontend/.env.example`):
 ```env
 VITE_API_BASE_URL=http://localhost:5000/api
 VITE_SOCKET_URL=http://localhost:5000
+
+# Maps: OpenStreetMap is used by default. For Google Maps:
+# VITE_GOOGLE_MAPS_API_KEY=your_key
+# VITE_USE_GOOGLE_MAPS=true
 ```
 
 Run frontend server:
@@ -110,10 +114,12 @@ npm run seed
 
 This will create:
 - 4 users (Admin, Owner, Rider, Customer)
-- 1 Restaurant
-- 3 Categories
-- 4 Menu Items
-- 2 Coupons
+- 1 Restaurant with full menu (Pizza, Burger, Noodles, etc.)
+- 8 Categories
+- 20+ Menu Items
+- 2 Coupons (`WELCOME50`, `FLAT50`)
+
+**Demo login:** `customer@yashpalsingh.com` / `customer123`
 
 ---
 
@@ -194,6 +200,7 @@ This will create:
 
 ```
 FoodDeliveryAPP/
+├── SC/                      # UI screenshots (linked in README)
 ├── Backend/
 │   ├── config/
 │   │   ├── cloudinary.js
@@ -216,12 +223,14 @@ FoodDeliveryAPP/
     │   │   └── food/
     │   ├── pages/
     │   │   ├── auth/
+    │   │   ├── maps/          # Live tracking (OSM + Google Maps)
     │   │   ├── Home.jsx
     │   │   ├── RestaurantDetail.jsx
     │   │   ├── Cart.jsx
     │   │   ├── Checkout.jsx
     │   │   ├── OrderTracking.jsx
     │   │   ├── OrderHistory.jsx
+    │   │   ├── Profile.jsx
     │   │   └── ...
     │   ├── styles/
     │   ├── utils/
@@ -243,12 +252,12 @@ FoodDeliveryAPP/
 
 ### Color Palette
 ```css
---color-primary: #FF5C00;
---color-primary-light: #FF7A2E;
---color-primary-dark: #D94E00;
---color-bg: #FFFFFF;
---color-bg-soft: #FFF8F5;
---color-text-primary: #1A1A1A;
+--primary: #FF6B35;
+--primary-light: #FFF0EB;
+--primary-dark: #E55A2B;
+--bg: #FFFFFF;
+--bg-light: #F8F9FA;
+--text-primary: #1A1A2E;
 ```
 
 ### Typography
@@ -306,29 +315,42 @@ FoodDeliveryAPP/
 
 ## 📸 Pages Preview
 
+Screenshots live in the [`SC/`](SC/) folder.
+
+| Page | Preview |
+|------|---------|
+| Home | [Home.png](SC/Home.png) |
+| Restaurant & Menu | [Restaurant.png](SC/Restaurant.png) |
+| Cart | [Cart.png](SC/Cart.png) |
+| Checkout | [Checkout.png](SC/Checkout.png) |
+| Order Tracking | [OrderTracking.png](SC/OrderTracking.png) |
+| Order History | [OrderHistory.png](SC/OrderHistory.png) |
+| Sign In | [SignIn.png](SC/SignIn.png) |
+| Sign Up | [SignUp.png](SC/SignUp.png) |
+
 ### 🏠 Home Page
-![Home Page](https://github.com/yashu1412/FoodDeliveryAPP/raw/main/screenshots/home.png)
+![Home Page](SC/Home.png)
 
 ### 🍽️ Restaurant Detail
-![Restaurant Detail](https://github.com/yashu1412/FoodDeliveryAPP/raw/main/screenshots/restaurant-detail.png)
+![Restaurant Detail](SC/Restaurant.png)
 
 ### 🛒 Cart
-![Cart](https://github.com/yashu1412/FoodDeliveryAPP/raw/main/screenshots/cart.png)
+![Cart](SC/Cart.png)
 
 ### 📦 Checkout
-![Checkout](https://github.com/yashu1412/FoodDeliveryAPP/raw/main/screenshots/checkout.png)
+![Checkout](SC/Checkout.png)
 
 ### 📍 Order Tracking
-![Order Tracking](https://github.com/yashu1412/FoodDeliveryAPP/raw/main/screenshots/tracking.png)
+![Order Tracking](SC/OrderTracking.png)
 
 ### 📋 Order History
-![Order History](https://github.com/yashu1412/FoodDeliveryAPP/raw/main/screenshots/order-history.png)
+![Order History](SC/OrderHistory.png)
 
-### 🔐 Login
-![Login](https://github.com/yashu1412/FoodDeliveryAPP/raw/main/screenshots/login.png)
+### 🔐 Sign In
+![Sign In](SC/SignIn.png)
 
-### 📝 Signup
-![Signup](https://github.com/yashu1412/FoodDeliveryAPP/raw/main/screenshots/signup.png)
+### 📝 Sign Up
+![Sign Up](SC/SignUp.png)
 
 ---
 

@@ -1,23 +1,22 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Clock, RefreshCw, MapPin } from "lucide-react";
+import { Clock, RefreshCw, MapPin, Package } from "lucide-react";
 import { api } from "../utils/api";
 import { useAppContext } from "../context/AppContext";
 import Navbar from "../components/layout/Navbar";
 import Card from "../components/ui/Card";
-import Badge from "../components/ui/Badge";
 import Button from "../components/ui/Button";
 import Spinner from "../components/ui/Spinner";
 import "./OrderHistory.css";
 
-const statusConfig = {
-  pending: { variant: "warning", label: "Pending" },
-  confirmed: { variant: "primary", label: "Confirmed" },
-  preparing: { variant: "primary", label: "Preparing" },
-  picked: { variant: "info", label: "Picked Up" },
-  on_the_way: { variant: "info", label: "On the Way" },
-  delivered: { variant: "success", label: "Delivered" },
-  cancelled: { variant: "danger", label: "Cancelled" },
+const statusLabels = {
+  pending: "Pending",
+  confirmed: "Confirmed",
+  preparing: "Preparing",
+  picked: "Picked Up",
+  on_the_way: "On the Way",
+  delivered: "Delivered",
+  cancelled: "Cancelled",
 };
 
 const ACTIVE_STATUSES = ["pending", "confirmed", "preparing", "picked", "on_the_way"];
@@ -28,6 +27,7 @@ export default function OrderHistory() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [tabKey, setTabKey] = useState(0);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -49,6 +49,11 @@ export default function OrderHistory() {
     }
   };
 
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    setTabKey((k) => k + 1);
+  };
+
   const activeOrders = orders.filter((o) => ACTIVE_STATUSES.includes(o.status));
   const pastOrders = orders.filter((o) => !ACTIVE_STATUSES.includes(o.status));
   const displayedOrders = activeTab === "active" ? activeOrders : pastOrders;
@@ -67,9 +72,9 @@ export default function OrderHistory() {
     return (
       <div className="order-history">
         <Navbar />
-        <div className="history-content" style={{ textAlign: "center", padding: "4rem" }}>
+        <div className="history-state">
           <Spinner size="lg" />
-          <p>Loading orders...</p>
+          <p className="history-loading-text">Loading your orders...</p>
         </div>
       </div>
     );
@@ -79,8 +84,9 @@ export default function OrderHistory() {
     return (
       <div className="order-history">
         <Navbar />
-        <div className="history-content" style={{ textAlign: "center", padding: "4rem" }}>
-          <h2>Sign in to view your orders</h2>
+        <div className="history-state">
+          <h2>Sign in to view orders</h2>
+          <p>Track active deliveries and order history from your account.</p>
           <Link to="/login">
             <Button size="lg">Sign In</Button>
           </Link>
@@ -94,84 +100,116 @@ export default function OrderHistory() {
       <Navbar />
 
       <div className="history-content">
-        <h1 className="history-title">Your Orders</h1>
+        <header className="history-header">
+          <h1 className="history-title">Your Orders</h1>
+          <p className="history-subtitle">
+            {orders.length} total · {activeOrders.length} active
+          </p>
+        </header>
+
         {error && <p className="history-error">{error}</p>}
 
         <div className="tabs">
           <button
+            type="button"
             className={`tab ${activeTab === "active" ? "active" : ""}`}
-            onClick={() => setActiveTab("active")}
+            onClick={() => handleTabChange("active")}
           >
             Active Orders
             {activeOrders.length > 0 && <span className="tab-count">{activeOrders.length}</span>}
           </button>
           <button
+            type="button"
             className={`tab ${activeTab === "past" ? "active" : ""}`}
-            onClick={() => setActiveTab("past")}
+            onClick={() => handleTabChange("past")}
           >
             Past Orders
+            {pastOrders.length > 0 && <span className="tab-count">{pastOrders.length}</span>}
           </button>
         </div>
 
-        <div className="orders-list">
+        <div className={`orders-list ${tabKey ? "orders-list--switching" : ""}`} key={tabKey}>
           {displayedOrders.length === 0 ? (
             <div className="empty-orders">
-              <div className="empty-icon">📦</div>
-              <h2 className="empty-title">No orders yet</h2>
-              <p className="empty-text">Your delicious food journey starts here!</p>
+              <div className="empty-icon-wrap">
+                <Package size={40} strokeWidth={1.5} color="var(--primary)" />
+              </div>
+              <h2 className="empty-title">
+                {activeTab === "active" ? "No active orders" : "No past orders"}
+              </h2>
+              <p className="empty-text">
+                {activeTab === "active"
+                  ? "When you place an order, it will show up here for live tracking."
+                  : "Completed and cancelled orders appear here."}
+              </p>
               <Link to="/">
                 <Button size="lg">Browse Restaurants</Button>
               </Link>
             </div>
           ) : (
-            displayedOrders.map((order) => (
-              <Card key={order._id} className="order-card">
-                <div className="order-header">
-                  <div className="order-restaurant">
-                    <img
-                      src={order.restaurant?.image}
-                      alt={order.restaurant?.name}
-                      className="restaurant-thumb"
-                    />
-                    <div>
-                      <h3 className="restaurant-name">{order.restaurant?.name}</h3>
-                      <p className="order-date">
-                        <Clock size={14} />
-                        {formatDate(order.createdAt)}
-                      </p>
+            displayedOrders.map((order, index) => (
+              <Card
+                key={order._id}
+                className="order-card"
+                style={{ animationDelay: `${index * 60}ms` }}
+              >
+                <div className="order-card-top">
+                  <div className="order-header">
+                    <div className="order-restaurant">
+                      <div className="order-thumb-wrap">
+                        <img
+                          src={
+                            order.restaurant?.image ||
+                            "https://placehold.co/144x144?text=R"
+                          }
+                          alt=""
+                          className="restaurant-thumb"
+                        />
+                      </div>
+                      <div>
+                        <h3 className="restaurant-name">
+                          {order.restaurant?.name || "Restaurant"}
+                        </h3>
+                        <div className="order-meta">
+                          <span>
+                            <Clock size={13} />
+                            {formatDate(order.createdAt)}
+                          </span>
+                          <span className="order-id">#{String(order._id).slice(-6).toUpperCase()}</span>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                  <Badge
-                    variant={statusConfig[order.status]?.variant || "primary"}
-                    className="order-status"
-                  >
-                    {statusConfig[order.status]?.label || order.status}
-                  </Badge>
-                </div>
-
-                <div className="order-items-summary">
-                  {order.items.map((item, index) => (
-                    <span key={index} className="item-summary">
-                      {item.quantity}x {item.name}
-                      {index < order.items.length - 1 && ", "}
+                    <span className={`order-status-pill ${order.status}`}>
+                      {statusLabels[order.status] || order.status}
                     </span>
-                  ))}
+                  </div>
                 </div>
 
-                <div className="order-footer">
-                  <p className="order-total">
-                    <strong>Total: ₹{order.pricing?.grandTotal || 0}</strong>
-                  </p>
+                <div className="order-card-body">
+                  <div className="order-items-summary">
+                    {order.items.map((item, idx) => (
+                      <span key={idx} className="item-chip">
+                        {item.quantity}× {item.name}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="order-card-footer">
+                  <div>
+                    <p className="order-total-label">Total</p>
+                    <p className="order-total-value">₹{order.pricing?.grandTotal || 0}</p>
+                  </div>
                   <div className="order-actions">
                     {order.status === "delivered" && (
-                      <Button variant="outline" size="sm">
+                      <Button variant="outline" size="sm" className="reorder-button" type="button">
                         <RefreshCw size={16} />
                         Re-order
                       </Button>
                     )}
                     {ACTIVE_STATUSES.includes(order.status) && (
                       <Link to={`/orders/${order._id}/track`}>
-                        <Button size="sm">
+                        <Button size="sm" className="track-button">
                           <MapPin size={16} />
                           Track
                         </Button>

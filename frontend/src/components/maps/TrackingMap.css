@@ -1,5 +1,6 @@
 .tracking-map-fallback {
-  height: 400px;
+  height: 100%;
+  min-height: 400px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -7,22 +8,37 @@
   gap: 0.75rem;
   padding: 1.5rem;
   text-align: center;
-  background: linear-gradient(135deg, var(--color-primary-50) 0%, var(--color-bg-muted) 100%);
-  border-radius: var(--radius-md);
-  color: var(--color-text-muted);
+  background: linear-gradient(135deg, var(--primary-light) 0%, var(--bg-light) 100%);
+  border-radius: var(--radius-lg);
+  color: var(--text-secondary);
   font-size: 0.9rem;
+}
+
+.tracking-map-loading .map-loading-pulse {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 3px solid var(--primary-light);
+  border-top-color: var(--primary);
+  animation: mapSpin 0.8s linear infinite;
+}
+
+@keyframes mapSpin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .tracking-map-coords {
   font-size: 0.8rem;
-  color: var(--color-text-secondary);
+  color: var(--text-secondary);
 }
 
 .osm-tracking-map {
   width: 100%;
   height: 100%;
   min-height: 400px;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   z-index: 0;
 }
 
@@ -31,8 +47,11 @@
   flex-wrap: wrap;
   gap: 0.75rem 1.25rem;
   margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border-light);
   font-size: 0.8rem;
-  color: var(--color-text-muted);
+  font-weight: 600;
+  color: var(--text-secondary);
 }
 
 .tracking-map-legend span {
@@ -49,7 +68,7 @@
 }
 
 .legend-dot.restaurant {
-  background: #ff4d2d;
+  background: var(--primary);
 }
 
 .legend-dot.rider {
@@ -57,7 +76,7 @@
 }
 
 .legend-dot.destination {
-  background: #16a34a;
+  background: var(--success);
 }
 
 .tracking-map-osm-wrap {
@@ -70,6 +89,14 @@
 .tracking-map-hint {
   margin-top: 0.5rem;
   font-size: 0.75rem;
-  color: var(--color-text-muted);
+  color: var(--text-muted);
   text-align: center;
+  line-height: 1.4;
+}
+
+.tracking-map-hint code {
+  font-size: 0.7rem;
+  background: var(--bg-light);
+  padding: 0.1rem 0.35rem;
+  border-radius: 4px;
 }
