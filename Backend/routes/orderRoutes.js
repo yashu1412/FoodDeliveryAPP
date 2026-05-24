@@ -4,6 +4,7 @@ import {
   createCashOnDeliveryOrder,
   getDeliveryOrders,
   getMyOrders,
+  getOrderById,
   getOwnerOrders,
   updateOrderStatus,
 } from "../controllers/orderController.js";
@@ -14,6 +15,7 @@ const router = express.Router();
 router.use(protect);
 router.post("/cod", createCashOnDeliveryOrder);
 router.get("/my-orders", getMyOrders);
+router.get("/:orderId", getOrderById);
 router.get("/owner", authorizeRoles("owner"), getOwnerOrders);
 router.get("/delivery", authorizeRoles("deliveryBoy"), getDeliveryOrders);
 router.put("/:orderId/status", authorizeRoles("owner", "deliveryBoy"), updateOrderStatus);

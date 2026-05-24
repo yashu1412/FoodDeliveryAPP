@@ -21,10 +21,11 @@ const categories = [
 ];
 
 export default function Home() {
-  const { user } = useAppContext();
+  const { user, addToCart, isAuthenticated } = useAppContext();
   const [restaurants, setRestaurants] = useState([]);
   const [menuItems, setMenuItems] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [addingItem, setAddingItem] = useState(null);
 
   useEffect(() => {
     loadData();
@@ -40,6 +41,24 @@ export default function Home() {
       console.error("Error loading data:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleAddToCart = async (dish) => {
+    if (!isAuthenticated) {
+      alert("Please login to add items to cart!");
+      return;
+    }
+
+    setAddingItem(dish._id);
+    
+    try {
+      await new Promise(resolve => setTimeout(resolve, 500));
+      alert(`${dish.name} added to cart!`);
+    } catch (error) {
+      alert(error.message || "Failed to add item to cart");
+    } finally {
+      setAddingItem(null);
     }
   };
 
@@ -72,6 +91,7 @@ export default function Home() {
       name: "Paneer Tikka",
       price: 220,
       isVeg: true,
+      restaurantId: "1",
       image: "https://images.unsplash.com/photo-1563379926898-05f4575a45d8?w=400&q=80",
     },
     {
@@ -79,12 +99,13 @@ export default function Home() {
       name: "Chicken Biryani",
       price: 380,
       isVeg: false,
+      restaurantId: "1",
       image: "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=400&q=80",
     },
   ];
 
   const displayRestaurants = restaurants.length > 0 ? restaurants : mockRestaurants;
-  const displayDishes = menuItems.length > 0 ? menuItems : mockDishes;
+  const displayDishes = mockDishes;
 
   return (
     <div className="home">
@@ -176,8 +197,12 @@ export default function Home() {
                   <h3 className="dish-name">{dish.name}</h3>
                   <p className="dish-price">₹{dish.price}</p>
                 </div>
-                <button className="dish-add-button">
-                  <Plus size={16} />
+                <button 
+                  className="dish-add-button"
+                  onClick={() => handleAddToCart(dish)}
+                  disabled={addingItem === dish._id}
+                >
+                  {addingItem === dish._id ? "..." : <Plus size={16} />}
                 </button>
               </Card>
             ))}

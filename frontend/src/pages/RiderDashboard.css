@@ -1,0 +1,259 @@
+.rider-dashboard {
+  min-height: 100vh;
+  background: var(--bg-light);
+}
+
+.dashboard-content {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.dashboard-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.dashboard-subtitle {
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+}
+
+.status-toggle {
+  padding: 0.75rem 2rem;
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+}
+
+.status-toggle.online {
+  background: var(--success);
+  color: white;
+}
+
+.status-toggle.offline {
+  background: var(--text-secondary);
+  color: white;
+}
+
+.status-toggle:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.dashboard-loading,
+.dashboard-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  gap: 1.5rem;
+}
+
+.dashboard-error h2 {
+  font-size: 2rem;
+  color: var(--error);
+}
+
+.dashboard-error p {
+  color: var(--text-secondary);
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1.5rem;
+}
+
+.stat-card.primary .stat-icon {
+  background: var(--primary-light);
+  color: var(--primary);
+}
+
+.stat-card.success .stat-icon {
+  background: var(--success-light);
+  color: var(--success);
+}
+
+.stat-card.warning .stat-icon {
+  background: var(--warning-light);
+  color: var(--warning);
+}
+
+.stat-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stat-content {
+  flex: 1;
+}
+
+.stat-title {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.25rem;
+}
+
+.stat-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.deliveries-card {
+  overflow: hidden;
+}
+
+.deliveries-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.deliveries-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.no-deliveries {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  gap: 1rem;
+  color: var(--text-secondary);
+}
+
+.no-deliveries-icon {
+  opacity: 0.5;
+}
+
+.deliveries-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.delivery-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--border-light);
+  transition: background var(--transition-fast);
+}
+
+.delivery-item:hover {
+  background: var(--bg-light);
+}
+
+.delivery-item:last-child {
+  border-bottom: none;
+}
+
+.delivery-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.delivery-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--primary-light);
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.delivery-id {
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.25rem;
+}
+
+.delivery-total {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.status-badge.status-confirmed,
+.status-badge.status-preparing,
+.status-badge.status-on_the_way {
+  background: var(--warning-light);
+  color: var(--warning);
+}
+
+.status-badge.status-delivered {
+  background: var(--success-light);
+  color: var(--success);
+}
+
+.status-badge.status-cancelled {
+  background: var(--error-light);
+  color: var(--error);
+}
+
+@media (max-width: 768px) {
+  .dashboard-content {
+    padding: 1rem;
+  }
+
+  .dashboard-title {
+    font-size: 1.75rem;
+  }
+
+  .dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .delivery-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+}

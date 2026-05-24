@@ -1,4 +1,5 @@
 import Order from "../models/OrderModel.js";
+import { isValidObjectId } from "../utils/helpers.js";
 
 const canAccessOrderTracking = (order, userId) =>
   order.user.toString() === userId.toString() ||
@@ -35,6 +36,10 @@ export const getOrderTracking = async (req, res) => {
 
 export const updateOrderTracking = async (req, res) => {
   try {
+    if (!isValidObjectId(req.params.orderId)) {
+      return res.status(400).json({ message: "Invalid order id" });
+    }
+
     const { latitude, longitude } = req.body;
     const order = await Order.findById(req.params.orderId).populate("restaurant", "owner");
 

@@ -28,7 +28,7 @@ const CLIENT_URL = process.env.CLIENT_URL || "http://localhost:5173";
 
 const io = new Server(server, {
   cors: {
-    origin: CLIENT_URL,
+    origin: "*",
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
   },
 });
@@ -37,7 +37,7 @@ app.set("io", io);
 
 app.use(
   cors({
-    origin: CLIENT_URL,
+    origin: "*",
   })
 );
 app.use(express.json());

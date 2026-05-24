@@ -8,31 +8,31 @@
 }
 
 .badge-default {
-  background-color: var(--color-bg-muted);
-  color: var(--color-text-secondary);
+  background-color: var(--bg-light);
+  color: var(--text-secondary);
 }
 
 .badge-primary {
-  background-color: var(--color-primary-50);
-  color: var(--color-primary);
+  background-color: var(--primary-light);
+  color: var(--primary);
 }
 
 .badge-success {
-  background-color: rgba(46, 204, 113, 0.1);
-  color: var(--color-accent-green);
+  background-color: var(--success-light);
+  color: var(--success-dark);
 }
 
 .badge-warning {
-  background-color: rgba(255, 184, 0, 0.1);
-  color: #f39c12;
+  background-color: var(--warning-light);
+  color: var(--warning-dark);
 }
 
 .badge-danger {
-  background-color: rgba(231, 76, 60, 0.1);
-  color: var(--color-accent-red);
+  background-color: var(--error-light);
+  color: var(--error-dark);
 }
 
 .badge-info {
-  background-color: rgba(52, 152, 219, 0.1);
-  color: #3498db;
+  background-color: var(--secondary-light);
+  color: var(--secondary-dark);
 }

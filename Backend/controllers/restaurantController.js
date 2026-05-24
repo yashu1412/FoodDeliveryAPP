@@ -1,4 +1,6 @@
 import Restaurant from "../models/RestaurantModel.js";
+import MenuItem from "../models/MenuItemModel.js";
+import Category from "../models/CategoryModel.js";
 
 export const createRestaurant = async (req, res) => {
   try {
@@ -72,28 +74,14 @@ export const updateRestaurant = async (req, res) => {
 
 export const getAllRestaurants = async (req, res) => {
   try {
-    const { search, city, cuisine } = req.query;
-    const query = { isApproved: true };
-
-    if (city) {
-      query["address.city"] = new RegExp(city, "i");
-    }
-
-    if (cuisine) {
-      query.cuisine = { $in: [new RegExp(cuisine, "i")] };
-    }
-
-    if (search) {
-      query.$text = { $search: search };
-    }
-
-    const restaurants = await Restaurant.find(query).populate("owner", "fullName email mobile");
+    const restaurants = await Restaurant.find().populate("owner", "fullName email mobile");
 
     return res.status(200).json({
       message: "Restaurants fetched successfully",
       restaurants,
     });
   } catch (error) {
+    console.error("Error fetching restaurants:", error);
     return res.status(500).json({ message: "Failed to fetch restaurants" });
   }
 };
@@ -101,13 +89,36 @@ export const getAllRestaurants = async (req, res) => {
 export const getMyRestaurants = async (req, res) => {
   try {
     const restaurants = await Restaurant.find({ owner: req.user._id });
+    const restaurant = restaurants[0] || null;
 
     return res.status(200).json({
       message: "Owner restaurants fetched successfully",
       restaurants,
+      restaurant,
     });
   } catch (error) {
     return res.status(500).json({ message: "Failed to fetch your restaurants" });
+  }
+};
+
+export const toggleRestaurantOpen = async (req, res) => {
+  try {
+    const restaurants = await Restaurant.find({ owner: req.user._id });
+    const restaurant = restaurants[0];
+    
+    if (!restaurant) {
+      return res.status(404).json({ message: "No restaurant found" });
+    }
+
+    restaurant.isOpen = !restaurant.isOpen;
+    await restaurant.save();
+
+    return res.status(200).json({
+      message: "Restaurant status updated",
+      restaurant,
+    });
+  } catch (error) {
+    return res.status(500).json({ message: "Failed to update restaurant status" });
   }
 };
 
@@ -119,9 +130,18 @@ export const getRestaurantById = async (req, res) => {
       return res.status(404).json({ message: "Restaurant not found" });
     }
 
+    const [menuItems, categories] = await Promise.all([
+      MenuItem.find({ restaurant: restaurant._id }),
+      Category.find({ restaurantId: restaurant._id }).sort({ sortOrder: 1 }),
+    ]);
+
     return res.status(200).json({
       message: "Restaurant fetched successfully",
-      restaurant,
+      restaurant: {
+        ...restaurant.toObject(),
+        menu: menuItems,
+        categories: categories,
+      },
     });
   } catch (error) {
     return res.status(500).json({ message: "Failed to fetch restaurant" });

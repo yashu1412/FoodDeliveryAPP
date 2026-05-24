@@ -1,6 +1,12 @@
 import { useState, useEffect } from "react";
 import { useAppContext } from "../context/AppContext";
 import { api } from "../utils/api";
+import { ShoppingBag, Utensils, FolderOpen, Star, Clock } from "lucide-react";
+import Navbar from "../components/layout/Navbar";
+import Card from "../components/ui/Card";
+import Button from "../components/ui/Button";
+import Spinner from "../components/ui/Spinner";
+import "./OwnerDashboard.css";
 
 export default function OwnerDashboard() {
   const { user } = useAppContext();
@@ -50,130 +56,183 @@ export default function OwnerDashboard() {
   };
 
   if (loading) {
-    return <div className="container mx-auto p-8 text-center">Loading...</div>;
+    return (
+      <div className="owner-dashboard">
+        <Navbar />
+        <div className="dashboard-loading">
+          <Spinner size="lg" />
+          <p>Loading dashboard...</p>
+        </div>
+      </div>
+    );
   }
 
   if (user?.role !== "owner") {
-    return <div className="container mx-auto p-8 text-center">Access denied</div>;
+    return (
+      <div className="owner-dashboard">
+        <Navbar />
+        <div className="dashboard-error">
+          <h2>Access Denied</h2>
+          <p>You don't have permission to view this page.</p>
+        </div>
+      </div>
+    );
   }
 
+  const statCards = [
+    {
+      title: "Total Orders",
+      value: orders.length,
+      icon: <ShoppingBag size={24} />,
+      color: "primary",
+    },
+    {
+      title: "Menu Items",
+      value: menuItems.length,
+      icon: <Utensils size={24} />,
+      color: "success",
+    },
+    {
+      title: "Categories",
+      value: categories.length,
+      icon: <FolderOpen size={24} />,
+      color: "warning",
+    },
+    {
+      title: "Rating",
+      value: `${restaurant?.rating || 0}/5`,
+      icon: <Star size={24} />,
+      color: "primary",
+    },
+  ];
+
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between mb-8">
-          <h1 className="text-3xl font-bold text-gray-800">Owner Dashboard</h1>
-          <div className="flex gap-3">
-            <button
-              onClick={toggleOpen}
-              className={`px-4 py-2 rounded-lg font-medium ${
-                restaurant?.isOpen
-                  ? "bg-green-500 text-white"
-                  : "bg-gray-500 text-white"
-              }`}
-            >
-              {restaurant?.isOpen ? "Open" : "Closed"}
-            </button>
+    <div className="owner-dashboard">
+      <Navbar />
+      <div className="dashboard-content">
+        <div className="dashboard-header">
+          <div>
+            <h1 className="dashboard-title">Owner Dashboard</h1>
+            <p className="dashboard-subtitle">
+              Manage your restaurant: {restaurant?.name}
+            </p>
           </div>
+          <button
+            onClick={toggleOpen}
+            className={`status-toggle ${restaurant?.isOpen ? "open" : "closed"}`}
+          >
+            {restaurant?.isOpen ? "Open" : "Closed"}
+          </button>
         </div>
 
-        <div className="flex gap-4 mb-6 border-b">
+        <div className="dashboard-tabs">
           {["overview", "orders", "menu", "categories"].map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`px-4 py-2 font-medium capitalize ${
-                activeTab === tab ? "border-b-2 border-[#ff4d2d] text-[#ff4d2d]" : "text-gray-600"
-              }`}
+              className={`dashboard-tab ${activeTab === tab ? "active" : ""}`}
             >
-              {tab}
+              {tab.charAt(0).toUpperCase() + tab.slice(1)}
             </button>
           ))}
         </div>
 
         {activeTab === "overview" && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="bg-white p-6 rounded-xl shadow-md">
-              <h3 className="text-gray-500 text-sm font-medium mb-2">Total Orders</h3>
-              <p className="text-3xl font-bold text-gray-800">{orders.length}</p>
-            </div>
-            <div className="bg-white p-6 rounded-xl shadow-md">
-              <h3 className="text-gray-500 text-sm font-medium mb-2">Menu Items</h3>
-              <p className="text-3xl font-bold text-gray-800">{menuItems.length}</p>
-            </div>
-            <div className="bg-white p-6 rounded-xl shadow-md">
-              <h3 className="text-gray-500 text-sm font-medium mb-2">Categories</h3>
-              <p className="text-3xl font-bold text-gray-800">{categories.length}</p>
-            </div>
-            <div className="bg-white p-6 rounded-xl shadow-md">
-              <h3 className="text-gray-500 text-sm font-medium mb-2">Rating</h3>
-              <p className="text-3xl font-bold text-gray-800">{restaurant?.rating || 0}/5</p>
+          <div className="overview-section">
+            <div className="stats-grid">
+              {statCards.map((stat, index) => (
+                <Card key={index} className={`stat-card ${stat.color}`}>
+                  <div className="stat-icon">{stat.icon}</div>
+                  <div className="stat-content">
+                    <h3 className="stat-title">{stat.title}</h3>
+                    <p className="stat-value">{stat.value}</p>
+                  </div>
+                </Card>
+              ))}
             </div>
           </div>
         )}
 
         {activeTab === "orders" && (
-          <div className="bg-white rounded-xl shadow-md overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Order ID</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Customer</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {orders.map((order) => (
-                    <tr key={order._id}>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">#{order._id.slice(-6)}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{order.user?.fullName || "N/A"}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">₹{order.pricing?.grandTotal || 0}</td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`px-2 py-1 text-xs font-medium rounded-full ${
-                          order.status === "delivered" ? "bg-green-100 text-green-800" :
-                          order.status === "cancelled" ? "bg-red-100 text-red-800" :
-                          "bg-yellow-100 text-yellow-800"
-                        }`}>
-                          {order.status}
-                        </span>
-                      </td>
+          <div className="orders-section">
+            <Card className="table-card">
+              <div className="table-header">
+                <h2 className="table-title">Orders</h2>
+              </div>
+              <div className="table-container">
+                <table className="data-table">
+                  <thead>
+                    <tr>
+                      <th>Order ID</th>
+                      <th>Customer</th>
+                      <th>Total</th>
+                      <th>Status</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody>
+                    {orders.map((order) => (
+                      <tr key={order._id}>
+                        <td>
+                          <span className="order-id">#{order._id.slice(-6)}</span>
+                        </td>
+                        <td>
+                          <span className="customer-name">{order.user?.fullName || "N/A"}</span>
+                        </td>
+                        <td>
+                          <span className="order-total">₹{order.pricing?.grandTotal || 0}</span>
+                        </td>
+                        <td>
+                          <span className={`status-badge status-${order.status}`}>
+                            {order.status}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </Card>
           </div>
         )}
 
         {activeTab === "menu" && (
-          <div className="bg-white rounded-xl shadow-md p-6">
-            <h2 className="text-xl font-bold mb-4">Menu Items</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {menuItems.map((item) => (
-                <div key={item._id} className="border rounded-lg p-4">
-                  <h3 className="font-semibold text-lg">{item.name}</h3>
-                  <p className="text-gray-600 text-sm">{item.description}</p>
-                  <p className="text-[#ff4d2d] font-bold mt-2">₹{item.price}</p>
-                  <p className={`text-sm mt-1 ${item.isAvailable ? "text-green-600" : "text-red-600"}`}>
-                    {item.isAvailable ? "Available" : "Out of Stock"}
-                  </p>
-                </div>
-              ))}
-            </div>
+          <div className="menu-section">
+            <Card className="menu-card">
+              <div className="menu-header">
+                <h2 className="menu-title">Menu Items</h2>
+              </div>
+              <div className="menu-grid">
+                {menuItems.map((item) => (
+                  <div key={item._id} className="menu-item-card">
+                    <div className="menu-item-info">
+                      <h3 className="menu-item-name">{item.name}</h3>
+                      <p className="menu-item-desc">{item.description}</p>
+                      <p className="menu-item-price">₹{item.price}</p>
+                      <p className={`menu-item-status ${item.isAvailable ? "available" : "unavailable"}`}>
+                        {item.isAvailable ? "Available" : "Out of Stock"}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Card>
           </div>
         )}
 
         {activeTab === "categories" && (
-          <div className="bg-white rounded-xl shadow-md p-6">
-            <h2 className="text-xl font-bold mb-4">Categories</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              {categories.map((category) => (
-                <div key={category._id} className="border rounded-lg p-4 text-center">
-                  <h3 className="font-semibold text-lg">{category.name}</h3>
-                </div>
-              ))}
-            </div>
+          <div className="categories-section">
+            <Card className="categories-card">
+              <div className="categories-header">
+                <h2 className="categories-title">Categories</h2>
+              </div>
+              <div className="categories-grid">
+                {categories.map((category) => (
+                  <div key={category._id} className="category-card">
+                    <h3 className="category-name">{category.name}</h3>
+                  </div>
+                ))}
+              </div>
+            </Card>
           </div>
         )}
       </div>

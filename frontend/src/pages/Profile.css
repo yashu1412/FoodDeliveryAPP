@@ -1,0 +1,324 @@
+.profile-page {
+  min-height: 100vh;
+  background: var(--bg-light);
+}
+
+.profile-content {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.profile-header {
+  margin-bottom: 2rem;
+}
+
+.profile-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.profile-tabs {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  border-bottom: 2px solid var(--border-light);
+  flex-wrap: wrap;
+}
+
+.profile-tab {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  position: relative;
+}
+
+.profile-tab:hover {
+  color: var(--primary);
+}
+
+.profile-tab.active {
+  color: var(--primary);
+}
+
+.profile-tab.active::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--primary);
+  border-radius: 3px 3px 0 0;
+}
+
+.profile-loading,
+.profile-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  gap: 1.5rem;
+}
+
+.profile-error h2 {
+  font-size: 2rem;
+  color: var(--error);
+}
+
+.profile-error p {
+  color: var(--text-secondary);
+  margin-bottom: 1rem;
+}
+
+.profile-card,
+.orders-card,
+.addresses-card,
+.settings-card {
+  overflow: hidden;
+}
+
+.profile-info {
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.profile-avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: var(--primary-light);
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.profile-details {
+  flex: 1;
+  min-width: 200px;
+}
+
+.profile-name {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.profile-email,
+.profile-phone {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.25rem;
+}
+
+.profile-actions {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.orders-header,
+.addresses-header,
+.settings-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--border-light);
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.orders-title,
+.addresses-title,
+.settings-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.no-orders,
+.no-addresses {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  gap: 1rem;
+  color: var(--text-secondary);
+}
+
+.no-orders-icon,
+.no-addresses-icon {
+  opacity: 0.5;
+}
+
+.orders-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.order-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--border-light);
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.order-item:last-child {
+  border-bottom: none;
+}
+
+.order-info {
+  flex: 1;
+  min-width: 200px;
+}
+
+.order-id {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.order-date {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.5rem;
+}
+
+.order-total {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--primary);
+}
+
+.order-status {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  align-items: flex-end;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.status-badge.status-confirmed,
+.status-badge.status-preparing,
+.status-badge.status-on_the_way {
+  background: var(--warning-light);
+  color: var(--warning);
+}
+
+.status-badge.status-delivered {
+  background: var(--success-light);
+  color: var(--success);
+}
+
+.status-badge.status-cancelled {
+  background: var(--error-light);
+  color: var(--error);
+}
+
+.settings-list {
+  padding: 1rem 0;
+}
+
+.setting-item {
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--border-light);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.setting-item:hover {
+  background: var(--bg-light);
+}
+
+.setting-item:last-child {
+  border-bottom: none;
+}
+
+.setting-label {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.25rem;
+}
+
+.setting-desc {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+@media (max-width: 768px) {
+  .profile-content {
+    padding: 1rem;
+  }
+
+  .profile-title {
+    font-size: 1.75rem;
+  }
+
+  .profile-tabs {
+    overflow-x: auto;
+  }
+
+  .profile-tab {
+    padding: 0.75rem 1rem;
+    font-size: 0.9rem;
+  }
+
+  .profile-info {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .profile-actions {
+    width: 100%;
+  }
+
+  .profile-actions .button {
+    flex: 1;
+  }
+
+  .order-item {
+    flex-direction: column;
+  }
+
+  .order-status {
+    align-items: flex-start;
+    width: 100%;
+  }
+
+  .orders-header,
+  .addresses-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

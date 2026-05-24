@@ -5,8 +5,8 @@
 .input-label {
   display: block;
   font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--color-text-secondary);
+  font-weight: 600;
+  color: var(--text-secondary);
   margin-bottom: 0.5rem;
 }
 
@@ -19,8 +19,9 @@
 .input-icon {
   position: absolute;
   left: 1rem;
-  color: var(--color-text-muted);
+  color: var(--text-muted);
   pointer-events: none;
+  transition: color var(--transition-fast);
 }
 
 .input-field {
@@ -28,25 +29,42 @@
   padding: 0.875rem 1rem;
   padding-left: 3rem;
   font-size: 1rem;
-  border: 2px solid var(--color-border);
-  border-radius: var(--radius-md);
-  background-color: var(--color-bg);
-  color: var(--color-text-primary);
-  transition: all var(--transition-fast);
+  border: 1.5px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  background-color: var(--bg);
+  color: var(--text-primary);
+  transition:
+    border-color var(--transition-normal),
+    box-shadow var(--transition-normal),
+    background var(--transition-fast);
   outline: none;
 }
 
+.input-field::placeholder {
+  color: var(--text-muted);
+}
+
+.input-field:hover {
+  border-color: var(--border-medium);
+}
+
 .input-field:focus {
-  border-color: var(--color-border-focus);
-  box-shadow: 0 0 0 3px rgba(255, 92, 0, 0.1);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.15);
+  background: var(--bg);
+}
+
+.input-container:focus-within .input-icon {
+  color: var(--primary);
 }
 
 .input-error {
-  border-color: var(--color-accent-red) !important;
+  border-color: var(--error) !important;
+  box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.12) !important;
 }
 
 .input-error-text {
   font-size: 0.875rem;
-  color: var(--color-accent-red);
+  color: var(--error);
   margin-top: 0.5rem;
 }

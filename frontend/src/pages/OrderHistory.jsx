@@ -1,54 +1,14 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Clock, RefreshCw, MapPin } from "lucide-react";
+import { api } from "../utils/api";
+import { useAppContext } from "../context/AppContext";
 import Navbar from "../components/layout/Navbar";
 import Card from "../components/ui/Card";
 import Badge from "../components/ui/Badge";
 import Button from "../components/ui/Button";
+import Spinner from "../components/ui/Spinner";
 import "./OrderHistory.css";
-
-const mockOrders = [
-  {
-    _id: "1",
-    restaurant: {
-      name: "SwiftEats Bistro",
-      image: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=200&q=80",
-    },
-    items: [
-      { name: "Paneer Tikka", quantity: 2 },
-      { name: "Butter Naan", quantity: 3 },
-    ],
-    total: 590,
-    status: "on_the_way",
-    date: "2024-01-15T18:30:00Z",
-  },
-  {
-    _id: "2",
-    restaurant: {
-      name: "Pizza Palace",
-      image: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=200&q=80",
-    },
-    items: [
-      { name: "Margherita Pizza", quantity: 1 },
-    ],
-    total: 350,
-    status: "delivered",
-    date: "2024-01-12T19:45:00Z",
-  },
-  {
-    _id: "3",
-    restaurant: {
-      name: "SwiftEats Bistro",
-      image: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=200&q=80",
-    },
-    items: [
-      { name: "Chicken Biryani", quantity: 1 },
-    ],
-    total: 380,
-    status: "cancelled",
-    date: "2024-01-10T20:15:00Z",
-  },
-];
 
 const statusConfig = {
   pending: { variant: "warning", label: "Pending" },
@@ -60,16 +20,37 @@ const statusConfig = {
   cancelled: { variant: "danger", label: "Cancelled" },
 };
 
+const ACTIVE_STATUSES = ["pending", "confirmed", "preparing", "picked", "on_the_way"];
+
 export default function OrderHistory() {
+  const { isAuthenticated } = useAppContext();
   const [activeTab, setActiveTab] = useState("active");
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  const activeOrders = mockOrders.filter((o) =>
-    ["pending", "confirmed", "preparing", "picked", "on_the_way"].includes(o.status)
-  );
-  const pastOrders = mockOrders.filter((o) =>
-    ["delivered", "cancelled"].includes(o.status)
-  );
+  useEffect(() => {
+    if (isAuthenticated) {
+      loadOrders();
+    } else {
+      setLoading(false);
+    }
+  }, [isAuthenticated]);
 
+  const loadOrders = async () => {
+    try {
+      setLoading(true);
+      const data = await api.orders.getAll();
+      setOrders(data.orders || []);
+    } catch (err) {
+      setError(err.message || "Failed to load orders");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const activeOrders = orders.filter((o) => ACTIVE_STATUSES.includes(o.status));
+  const pastOrders = orders.filter((o) => !ACTIVE_STATUSES.includes(o.status));
   const displayedOrders = activeTab === "active" ? activeOrders : pastOrders;
 
   const formatDate = (dateString) => {
@@ -82,12 +63,39 @@ export default function OrderHistory() {
     });
   };
 
+  if (loading) {
+    return (
+      <div className="order-history">
+        <Navbar />
+        <div className="history-content" style={{ textAlign: "center", padding: "4rem" }}>
+          <Spinner size="lg" />
+          <p>Loading orders...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <div className="order-history">
+        <Navbar />
+        <div className="history-content" style={{ textAlign: "center", padding: "4rem" }}>
+          <h2>Sign in to view your orders</h2>
+          <Link to="/login">
+            <Button size="lg">Sign In</Button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="order-history">
       <Navbar />
-      
+
       <div className="history-content">
         <h1 className="history-title">Your Orders</h1>
+        {error && <p className="history-error">{error}</p>}
 
         <div className="tabs">
           <button
@@ -95,9 +103,7 @@ export default function OrderHistory() {
             onClick={() => setActiveTab("active")}
           >
             Active Orders
-            {activeOrders.length > 0 && (
-              <span className="tab-count">{activeOrders.length}</span>
-            )}
+            {activeOrders.length > 0 && <span className="tab-count">{activeOrders.length}</span>}
           </button>
           <button
             className={`tab ${activeTab === "past" ? "active" : ""}`}
@@ -123,23 +129,23 @@ export default function OrderHistory() {
                 <div className="order-header">
                   <div className="order-restaurant">
                     <img
-                      src={order.restaurant.image}
-                      alt={order.restaurant.name}
+                      src={order.restaurant?.image}
+                      alt={order.restaurant?.name}
                       className="restaurant-thumb"
                     />
                     <div>
-                      <h3 className="restaurant-name">{order.restaurant.name}</h3>
+                      <h3 className="restaurant-name">{order.restaurant?.name}</h3>
                       <p className="order-date">
                         <Clock size={14} />
-                        {formatDate(order.date)}
+                        {formatDate(order.createdAt)}
                       </p>
                     </div>
                   </div>
                   <Badge
-                    variant={statusConfig[order.status].variant}
+                    variant={statusConfig[order.status]?.variant || "primary"}
                     className="order-status"
                   >
-                    {statusConfig[order.status].label}
+                    {statusConfig[order.status]?.label || order.status}
                   </Badge>
                 </div>
 
@@ -154,7 +160,7 @@ export default function OrderHistory() {
 
                 <div className="order-footer">
                   <p className="order-total">
-                    <strong>Total: ₹{order.total}</strong>
+                    <strong>Total: ₹{order.pricing?.grandTotal || 0}</strong>
                   </p>
                   <div className="order-actions">
                     {order.status === "delivered" && (
@@ -163,9 +169,7 @@ export default function OrderHistory() {
                         Re-order
                       </Button>
                     )}
-                    {["pending", "confirmed", "preparing", "picked", "on_the_way"].includes(
-                      order.status
-                    ) && (
+                    {ACTIVE_STATUSES.includes(order.status) && (
                       <Link to={`/orders/${order._id}/track`}>
                         <Button size="sm">
                           <MapPin size={16} />

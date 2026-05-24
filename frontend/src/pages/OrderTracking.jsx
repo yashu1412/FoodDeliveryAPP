@@ -1,46 +1,153 @@
 import { useParams, Link } from "react-router-dom";
 import { Phone, Map as MapIcon, Package, ChevronDown, ChevronUp } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { io } from "socket.io-client";
+import { api, API_BASE_URL } from "../utils/api";
+import { useAppContext } from "../context/AppContext";
 import Navbar from "../components/layout/Navbar";
 import StatusStepper from "../components/food/StatusStepper";
+import TrackingMap from "../components/maps/TrackingMap";
 import Card from "../components/ui/Card";
 import Button from "../components/ui/Button";
 import Avatar from "../components/ui/Avatar";
+import Spinner from "../components/ui/Spinner";
 import "./OrderTracking.css";
 
-const mockOrder = {
-  _id: "1",
-  restaurant: {
-    name: "SwiftEats Bistro",
-    image: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=200&q=80",
-  },
-  items: [
-    { name: "Paneer Tikka", quantity: 2, price: 220 },
-    { name: "Butter Naan", quantity: 3, price: 50 },
-  ],
-  total: 590,
-  status: "on_the_way",
-  rider: {
-    name: "Raj Kumar",
-    phone: "+91 9876543210",
-    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&q=80",
-    rating: 4.8,
-  },
-  estimatedTime: "12 mins",
-};
+const isValidMongoId = (value) => /^[a-f\d]{24}$/i.test(value);
 
 export default function OrderTracking() {
   const { id } = useParams();
+  const { isAuthenticated } = useAppContext();
   const [showItems, setShowItems] = useState(false);
+  const [order, setOrder] = useState(null);
+  const [tracking, setTracking] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const order = mockOrder;
+  useEffect(() => {
+    loadOrder();
+  }, [id]);
+
+  useEffect(() => {
+    if (!id || !isValidMongoId(id) || !isAuthenticated) return;
+
+    const socketBaseUrl = import.meta.env.VITE_SOCKET_URL || API_BASE_URL.replace(/\/api$/, "");
+    const socket = io(socketBaseUrl, { transports: ["websocket"] });
+
+    socket.emit("order:join", id);
+
+    socket.on("order:locationUpdated", (payload) => {
+      if (payload.tracking) setTracking(payload.tracking);
+      if (payload.status) {
+        setOrder((prev) => (prev ? { ...prev, status: payload.status } : prev));
+      }
+    });
+
+    socket.on("order:statusUpdated", (payload) => {
+      if (payload.status) {
+        setOrder((prev) => (prev ? { ...prev, status: payload.status } : prev));
+      }
+    });
+
+    return () => {
+      socket.emit("order:leave", id);
+      socket.disconnect();
+    };
+  }, [id, isAuthenticated]);
+
+  const loadOrder = async () => {
+    if (!isValidMongoId(id)) {
+      setError("Invalid order link. Place a new order or open one from Your Orders.");
+      setLoading(false);
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError(null);
+
+      const [orderData, trackingData] = await Promise.all([
+        api.orders.getById(id),
+        api.tracking.get(id).catch(() => null),
+      ]);
+
+      setOrder(orderData.order);
+      setTracking(trackingData?.tracking || orderData.order?.tracking || null);
+    } catch (err) {
+      setError(err.message || "Failed to load order");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="order-tracking">
+        <Navbar />
+        <div className="loading-container">
+          <Spinner size="lg" />
+          <p>Loading order details...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="order-tracking">
+        <Navbar />
+        <div className="error-container">
+          <h2>Unable to load tracking</h2>
+          <p>{error}</p>
+          <Link to="/orders">
+            <Button>View All Orders</Button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  if (!order) {
+    return (
+      <div className="order-tracking">
+        <Navbar />
+        <div className="error-container">
+          <h2>Order Not Found</h2>
+          <Link to="/orders">
+            <Button>View All Orders</Button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  const rider = order.deliveryPartner
+    ? {
+        name: order.deliveryPartner.fullName,
+        phone: order.deliveryPartner.mobile,
+        avatar: order.deliveryPartner.avatar,
+        rating: 4.8,
+      }
+    : {
+        name: "Assigning rider...",
+        phone: "",
+        avatar: "",
+        rating: null,
+      };
+
+  const estimatedTime = order.estimatedDeliveryTime
+    ? `${Math.max(0, Math.ceil((new Date(order.estimatedDeliveryTime) - new Date()) / 60000))} mins`
+    : "30 mins";
+
+  const orderLabel = String(order._id).slice(-6).toUpperCase();
+  const restaurantLocation = order.restaurant?.location;
 
   return (
     <div className="order-tracking">
       <Navbar />
-      
+
       <div className="tracking-content">
-        <h1 className="tracking-title">Order #{id}</h1>
+        <h1 className="tracking-title">Order #{orderLabel}</h1>
 
         <div className="tracking-grid">
           <div className="tracking-left">
@@ -48,7 +155,7 @@ export default function OrderTracking() {
               <StatusStepper currentStatus={order.status} />
               <div className="estimated-time">
                 <span>⏱️</span>
-                <span className="time-text">{order.estimatedTime} away</span>
+                <span className="time-text">{estimatedTime} away</span>
               </div>
             </div>
 
@@ -57,26 +164,35 @@ export default function OrderTracking() {
                 <MapIcon size={20} />
                 Live Tracking
               </h2>
-              <div className="map-placeholder">
-                <div className="map-content">
-                  <div className="map-pin rider-pin">🛵</div>
-                  <div className="map-pin destination-pin">📍</div>
-                </div>
-                <p className="map-text">Google Maps will appear here</p>
+              <div className="map-live">
+                <TrackingMap tracking={tracking} restaurantLocation={restaurantLocation} />
               </div>
             </Card>
 
             <Card className="rider-section">
               <h2 className="section-title">Your Rider</h2>
               <div className="rider-info">
-                <Avatar src={order.rider.avatar} initials="RK" size="lg" />
+                <Avatar
+                  src={rider.avatar}
+                  initials={
+                    rider.name
+                      ? rider.name
+                          .split(" ")
+                          .map((n) => n[0])
+                          .join("")
+                      : "AR"
+                  }
+                  size="lg"
+                />
                 <div className="rider-details">
-                  <h3 className="rider-name">{order.rider.name}</h3>
-                  <p className="rider-rating">⭐ {order.rider.rating}</p>
+                  <h3 className="rider-name">{rider.name}</h3>
+                  {rider.rating && <p className="rider-rating">⭐ {rider.rating}</p>}
                 </div>
-                <a href={`tel:${order.rider.phone}`} className="call-button">
-                  <Phone size={18} />
-                </a>
+                {rider.phone && (
+                  <a href={`tel:${rider.phone}`} className="call-button">
+                    <Phone size={18} />
+                  </a>
+                )}
               </div>
             </Card>
           </div>
@@ -87,22 +203,28 @@ export default function OrderTracking() {
                 <Package size={20} />
                 Order Details
               </h2>
-              
+
               <div className="restaurant-info">
-                <img src={order.restaurant.image} alt={order.restaurant.name} className="restaurant-thumb" />
+                <img
+                  src={order.restaurant?.image || "https://placehold.co/600x400?text=Restaurant"}
+                  alt={order.restaurant?.name}
+                  className="restaurant-thumb"
+                />
                 <div>
-                  <h3 className="restaurant-name">{order.restaurant.name}</h3>
+                  <h3 className="restaurant-name">
+                    {order.restaurant?.name || "SwiftEats Restaurant"}
+                  </h3>
                 </div>
               </div>
 
               <div className="items-toggle" onClick={() => setShowItems(!showItems)}>
-                <span>Order Items ({order.items.length})</span>
+                <span>Order Items ({order.items?.length || 0})</span>
                 {showItems ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
               </div>
 
               {showItems && (
                 <div className="order-items">
-                  {order.items.map((item, index) => (
+                  {(order.items || []).map((item, index) => (
                     <div key={index} className="order-item">
                       <span className="item-name">
                         {item.quantity}x {item.name}
@@ -117,7 +239,7 @@ export default function OrderTracking() {
 
               <div className="summary-row total">
                 <span>Total</span>
-                <span>₹{order.total}</span>
+                <span>₹{order.pricing?.grandTotal || order.total || 0}</span>
               </div>
 
               <Link to="/orders">

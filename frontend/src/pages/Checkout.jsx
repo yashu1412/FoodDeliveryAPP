@@ -1,121 +1,234 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { MapPin, CreditCard, Wallet, ArrowRight } from "lucide-react";
+import { useState, useEffect } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { MapPin, CreditCard, Wallet, ArrowRight, LocateFixed } from "lucide-react";
+import { api } from "../utils/api";
+import { useAppContext } from "../context/AppContext";
 import Navbar from "../components/layout/Navbar";
 import Card from "../components/ui/Card";
 import Button from "../components/ui/Button";
 import Input from "../components/ui/Input";
+import Spinner from "../components/ui/Spinner";
 import "./Checkout.css";
-
-const mockCartItems = [
-  { id: "1", name: "Paneer Tikka", price: 220, quantity: 2 },
-  { id: "2", name: "Butter Naan", price: 50, quantity: 3 },
-];
-
-const mockAddresses = [
-  {
-    id: "1",
-    type: "Home",
-    address: "123 Main Street, Pune, Maharashtra 411001",
-    phone: "+91 9359028987",
-  },
-  {
-    id: "2",
-    type: "Work",
-    address: "456 Business Park, Pune, Maharashtra 411014",
-    phone: "+91 9359028987",
-  },
-];
 
 export default function Checkout() {
   const navigate = useNavigate();
-  const [selectedAddress, setSelectedAddress] = useState(mockAddresses[0].id);
-  const [paymentMethod, setPaymentMethod] = useState("razorpay");
-  const [newAddress, setNewAddress] = useState({
-    type: "Home",
-    address: "",
+  const { user, isAuthenticated, deliveryLocation } = useAppContext();
+  const [paymentMethod, setPaymentMethod] = useState("cod");
+  const [cart, setCart] = useState(null);
+  const [restaurant, setRestaurant] = useState(null);
+  const [pricing, setPricing] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [placing, setPlacing] = useState(false);
+  const [error, setError] = useState("");
+  const [address, setAddress] = useState({
+    fullName: "",
     phone: "",
+    line1: "",
+    city: "Pune",
+    state: "Maharashtra",
+    pincode: "411001",
   });
-  const [showNewAddressForm, setShowNewAddressForm] = useState(false);
 
-  const subtotal = mockCartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const deliveryFee = 30;
-  const tax = Math.round(subtotal * 0.05);
-  const total = subtotal + deliveryFee + tax;
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate("/login", { state: { from: { pathname: "/checkout" } } });
+      return;
+    }
+    loadCart();
+  }, [isAuthenticated]);
 
-  const handlePlaceOrder = () => {
-    navigate("/orders/1/track");
+  useEffect(() => {
+    if (user) {
+      setAddress((prev) => ({
+        ...prev,
+        fullName: user.fullName || prev.fullName,
+        phone: user.mobile || prev.phone,
+      }));
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (!deliveryLocation) return;
+
+    setAddress((prev) => ({
+      ...prev,
+      line1: deliveryLocation.fullAddress || prev.line1,
+      city: deliveryLocation.city || prev.city,
+      state: deliveryLocation.state || prev.state,
+      pincode: deliveryLocation.pincode || prev.pincode,
+    }));
+  }, [deliveryLocation]);
+
+  const loadCart = async () => {
+    try {
+      setLoading(true);
+      const data = await api.cart.get();
+      if (!data.cart?.items?.length) {
+        setCart(null);
+        return;
+      }
+      setCart(data.cart);
+      setRestaurant(data.restaurant);
+      setPricing(data.pricing);
+    } catch (err) {
+      setError(err.message || "Failed to load cart");
+    } finally {
+      setLoading(false);
+    }
   };
+
+  const items = cart?.items || [];
+  const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
+  const subtotal = pricing?.itemsTotal ?? 0;
+  const deliveryFee = pricing?.deliveryFee ?? 0;
+  const tax = pricing?.taxAmount ?? 0;
+  const total = pricing?.grandTotal ?? 0;
+
+  const handlePlaceOrder = async () => {
+    if (paymentMethod === "razorpay") {
+      setError("Online payment is not wired in this demo. Please use Cash on Delivery.");
+      return;
+    }
+
+    if (
+      !address.fullName ||
+      !address.phone ||
+      !address.line1 ||
+      !address.city ||
+      !address.state ||
+      !address.pincode
+    ) {
+      setError("Please fill in your complete delivery address.");
+      return;
+    }
+
+    setPlacing(true);
+    setError("");
+
+    try {
+      const deliveryAddress = {
+        ...address,
+        latitude: deliveryLocation?.latitude ?? restaurant?.location?.latitude ?? 18.5314,
+        longitude: deliveryLocation?.longitude ?? restaurant?.location?.longitude ?? 73.8446,
+      };
+
+      const data = await api.orders.create({ deliveryAddress });
+      navigate(`/orders/${data.order._id}/track`, { replace: true });
+    } catch (err) {
+      setError(err.message || "Failed to place order");
+    } finally {
+      setPlacing(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="checkout">
+        <Navbar />
+        <div className="checkout-state">
+          <Spinner size="lg" />
+          <p className="checkout-loading-text">Preparing checkout...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!cart?.items?.length) {
+    return (
+      <div className="checkout">
+        <Navbar />
+        <div className="checkout-state">
+          <h2>Your cart is empty</h2>
+          <p>Add items from a restaurant before checkout.</p>
+          <Link to="/">
+            <Button size="lg">Browse Restaurants</Button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="checkout">
       <Navbar />
 
       <div className="checkout-content">
-        <h1 className="checkout-title">Checkout</h1>
+        <header className="checkout-header">
+          <h1 className="checkout-title">Checkout</h1>
+          <p className="checkout-subtitle">
+            {itemCount} {itemCount === 1 ? "item" : "items"} · Confirm delivery & pay
+          </p>
+          <div className="checkout-steps">
+            <span className="checkout-step done">Cart</span>
+            <span className="checkout-step-arrow">→</span>
+            <span className="checkout-step active">Checkout</span>
+            <span className="checkout-step-arrow">→</span>
+            <span className="checkout-step">Track</span>
+          </div>
+        </header>
+
+        {error && <div className="checkout-error">{error}</div>}
 
         <div className="checkout-grid">
           <div className="checkout-left">
-            <Card className="address-section">
+            <Card className="checkout-panel address-section">
               <h2 className="section-title">
                 <MapPin size={20} />
                 Delivery Address
               </h2>
-              <div className="address-list">
-                {mockAddresses.map((addr) => (
-                  <label
-                    key={addr.id}
-                    className={`address-item ${selectedAddress === addr.id ? "selected" : ""}`}
-                  >
-                    <input
-                      type="radio"
-                      name="address"
-                      value={addr.id}
-                      checked={selectedAddress === addr.id}
-                      onChange={() => setSelectedAddress(addr.id)}
-                    />
-                    <div className="address-details">
-                      <span className="address-type">{addr.type}</span>
-                      <p className="address-text">{addr.address}</p>
-                      <p className="address-phone">{addr.phone}</p>
-                    </div>
-                  </label>
-                ))}
-              </div>
 
-              <button
-                className="add-address-button"
-                onClick={() => setShowNewAddressForm(!showNewAddressForm)}
-              >
-                {showNewAddressForm ? "Cancel" : "+ Add New Address"}
-              </button>
-
-              {showNewAddressForm && (
-                <div className="new-address-form">
-                  <Input
-                    label="Address Type"
-                    placeholder="Home/Work"
-                    value={newAddress.type}
-                    onChange={(e) => setNewAddress({ ...newAddress, type: e.target.value })}
-                  />
-                  <Input
-                    label="Complete Address"
-                    placeholder="Enter your full address"
-                    value={newAddress.address}
-                    onChange={(e) => setNewAddress({ ...newAddress, address: e.target.value })}
-                  />
-                  <Input
-                    label="Phone Number"
-                    placeholder="+91 9999999999"
-                    value={newAddress.phone}
-                    onChange={(e) => setNewAddress({ ...newAddress, phone: e.target.value })}
-                  />
-                  <Button>Save Address</Button>
+              {deliveryLocation?.label && (
+                <div className="location-hint">
+                  <LocateFixed size={18} aria-hidden />
+                  <span>
+                    Delivering near <strong>{deliveryLocation.label}</strong>
+                    {deliveryLocation.fullAddress ? ` — ${deliveryLocation.fullAddress}` : ""}
+                  </span>
                 </div>
               )}
+
+              <div className="new-address-form">
+                <Input
+                  label="Full Name"
+                  value={address.fullName}
+                  onChange={(e) => setAddress({ ...address, fullName: e.target.value })}
+                  required
+                />
+                <Input
+                  label="Phone"
+                  value={address.phone}
+                  onChange={(e) => setAddress({ ...address, phone: e.target.value })}
+                  required
+                />
+                <Input
+                  label="Address Line"
+                  value={address.line1}
+                  onChange={(e) => setAddress({ ...address, line1: e.target.value })}
+                  placeholder="Street, building, area"
+                  required
+                />
+                <Input
+                  label="City"
+                  value={address.city}
+                  onChange={(e) => setAddress({ ...address, city: e.target.value })}
+                  required
+                />
+                <Input
+                  label="State"
+                  value={address.state}
+                  onChange={(e) => setAddress({ ...address, state: e.target.value })}
+                  required
+                />
+                <Input
+                  label="Pincode"
+                  value={address.pincode}
+                  onChange={(e) => setAddress({ ...address, pincode: e.target.value })}
+                  required
+                />
+              </div>
             </Card>
 
-            <Card className="payment-section">
+            <Card className="checkout-panel payment-section">
               <h2 className="section-title">
                 <CreditCard size={20} />
                 Payment Method
@@ -153,9 +266,7 @@ export default function Checkout() {
                     onChange={() => setPaymentMethod("cod")}
                   />
                   <div className="payment-details">
-                    <div className="payment-icon">
-                      💵
-                    </div>
+                    <div className="payment-icon">💵</div>
                     <div>
                       <span className="payment-name">Cash on Delivery</span>
                       <span className="payment-desc">Pay when you receive</span>
@@ -169,10 +280,21 @@ export default function Checkout() {
           <div className="checkout-right">
             <Card className="order-summary">
               <h2 className="section-title">Order Summary</h2>
-              
+
+              {restaurant && (
+                <div className="checkout-restaurant-chip">
+                  {restaurant.image && <img src={restaurant.image} alt="" />}
+                  <span>{restaurant.name}</span>
+                </div>
+              )}
+
               <div className="summary-items">
-                {mockCartItems.map((item) => (
-                  <div key={item.id} className="summary-item">
+                {items.map((item, index) => (
+                  <div
+                    key={item.menuItem?._id || item.menuItem || item.name}
+                    className="summary-item"
+                    style={{ animationDelay: `${index * 40}ms` }}
+                  >
                     <span className="summary-item-name">
                       {item.quantity}x {item.name}
                     </span>
@@ -195,21 +317,22 @@ export default function Checkout() {
                 <span>Taxes (5%)</span>
                 <span>₹{tax}</span>
               </div>
-              
+
               <div className="summary-divider"></div>
 
               <div className="summary-row total">
                 <span>Total</span>
-                <span>₹{total}</span>
+                <span key={total}>₹{total}</span>
               </div>
 
               <Button
                 size="lg"
                 className="place-order-button"
                 onClick={handlePlaceOrder}
+                disabled={placing}
               >
-                Place Order
-                <ArrowRight size={18} />
+                {placing ? "Placing Order..." : "Place Order"}
+                {!placing && <ArrowRight size={18} />}
               </Button>
             </Card>
           </div>

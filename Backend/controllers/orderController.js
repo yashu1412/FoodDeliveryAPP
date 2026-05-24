@@ -1,7 +1,7 @@
 import Cart from "../models/CartModel.js";
 import Order from "../models/OrderModel.js";
 import Restaurant from "../models/RestaurantModel.js";
-import { calculateCartTotals } from "../utils/helpers.js";
+import { calculateCartTotals, isValidObjectId } from "../utils/helpers.js";
 
 const validateDeliveryAddress = (deliveryAddress) =>
   deliveryAddress?.fullName &&
@@ -27,6 +27,34 @@ const getCheckoutData = async (userId) => {
   const pricing = calculateCartTotals(cart.items, restaurant.deliveryFee || 0);
 
   return { cart, restaurant, pricing };
+};
+
+export const getOrderById = async (req, res) => {
+  try {
+    if (!isValidObjectId(req.params.orderId)) {
+      return res.status(400).json({ message: "Invalid order id" });
+    }
+
+    const order = await Order.findById(req.params.orderId)
+      .populate("restaurant", "name image address location")
+      .populate("deliveryPartner", "fullName mobile avatar");
+
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    if (order.user.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: "You cannot access this order" });
+    }
+
+    return res.status(200).json({
+      message: "Order fetched successfully",
+      order,
+    });
+  } catch (error) {
+    console.error("Get order error:", error);
+    return res.status(500).json({ message: "Failed to fetch order" });
+  }
 };
 
 export const createCashOnDeliveryOrder = async (req, res) => {

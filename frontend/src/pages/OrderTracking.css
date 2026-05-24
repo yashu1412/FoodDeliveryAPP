@@ -63,6 +63,12 @@
   padding: 1.5rem;
 }
 
+.map-live {
+  height: 400px;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
 .map-placeholder {
   height: 400px;
   background: linear-gradient(135deg, var(--color-primary-50) 0%, var(--color-bg-muted) 100%);

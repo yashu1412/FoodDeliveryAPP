@@ -58,15 +58,23 @@ export const api = {
   },
   cart: {
     get: () => apiRequest("/cart"),
-    addItem: (data) => apiRequest("/cart/items", { method: "POST", body: JSON.stringify(data) }),
-    updateQuantity: (itemId, data) => apiRequest(`/cart/items/${itemId}`, { method: "PATCH", body: JSON.stringify(data) }),
-    removeItem: (itemId) => apiRequest(`/cart/items/${itemId}`, { method: "DELETE" }),
-    clear: () => apiRequest("/cart", { method: "DELETE" }),
+    addItem: ({ menuItemId, menuItem, quantity = 1 }) =>
+      apiRequest("/cart/items", {
+        method: "POST",
+        body: JSON.stringify({ menuItemId: menuItemId || menuItem, quantity }),
+      }),
+    updateQuantity: (menuItemId, { quantity }) =>
+      apiRequest("/cart", {
+        method: "PUT",
+        body: JSON.stringify({ menuItemId, quantity }),
+      }),
+    removeItem: (menuItemId) => apiRequest(`/cart/items/${menuItemId}`, { method: "DELETE" }),
+    clear: () => apiRequest("/cart/clear", { method: "DELETE" }),
   },
   orders: {
-    getAll: () => apiRequest("/orders"),
+    getAll: () => apiRequest("/orders/my-orders"),
     getById: (id) => apiRequest(`/orders/${id}`),
-    create: (data) => apiRequest("/orders", { method: "POST", body: JSON.stringify(data) }),
+    create: (data) => apiRequest("/orders/cod", { method: "POST", body: JSON.stringify(data) }),
     updateStatus: (id, data) => apiRequest(`/orders/${id}/status`, { method: "PATCH", body: JSON.stringify(data) }),
     assignRider: (id, riderId) => apiRequest(`/orders/${id}/assign-rider`, { method: "PATCH", body: JSON.stringify({ riderId }) }),
   },
@@ -75,7 +83,7 @@ export const api = {
     verifyPayment: (data) => apiRequest("/payments/verify-payment", { method: "POST", body: JSON.stringify(data) }),
   },
   tracking: {
-    update: (orderId, data) => apiRequest(`/tracking/${orderId}`, { method: "POST", body: JSON.stringify(data) }),
+    update: (orderId, data) => apiRequest(`/tracking/${orderId}/location`, { method: "PUT", body: JSON.stringify(data) }),
     get: (orderId) => apiRequest(`/tracking/${orderId}`),
   },
   reviews: {

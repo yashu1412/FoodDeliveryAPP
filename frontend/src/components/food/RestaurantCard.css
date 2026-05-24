@@ -1,15 +1,17 @@
 .restaurant-card {
   overflow: hidden;
   cursor: pointer;
+  transition: all var(--transition-normal);
 }
 
 .restaurant-card:hover {
-  box-shadow: var(--shadow-spice-xl);
+  box-shadow: var(--shadow-xl);
+  transform: translateY(-4px);
 }
 
 .restaurant-card-image-container {
   position: relative;
-  height: 200px;
+  height: 220px;
   overflow: hidden;
 }
 
@@ -36,11 +38,10 @@
 }
 
 .restaurant-card-name {
-  font-family: var(--font-display);
-  font-size: 1.25rem;
+  font-size: 1.35rem;
   font-weight: 700;
-  color: var(--color-text-primary);
-  margin-bottom: 0.5rem;
+  color: var(--text-primary);
+  margin-bottom: 0.75rem;
 }
 
 .restaurant-card-cuisines {
@@ -66,9 +67,9 @@
   align-items: center;
   gap: 0.25rem;
   font-size: 0.875rem;
-  color: var(--color-text-secondary);
+  color: var(--text-secondary);
 }
 
 .restaurant-card-detail-icon {
-  color: var(--color-primary);
+  color: var(--primary);
 }

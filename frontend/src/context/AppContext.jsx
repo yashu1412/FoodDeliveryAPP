@@ -3,12 +3,23 @@ import { apiRequest } from "../utils/api";
 import { clearAuthSession, getStoredUser, getToken, saveAuthSession } from "../utils/auth";
 
 const AppContext = createContext(null);
+const LOCATION_KEY = "food_delivery_location";
+
+const getStoredLocation = () => {
+  try {
+    const stored = localStorage.getItem(LOCATION_KEY);
+    return stored ? JSON.parse(stored) : null;
+  } catch {
+    return null;
+  }
+};
 
 export function AppProvider({ children }) {
   const [user, setUser] = useState(getStoredUser());
   const [token, setToken] = useState(getToken());
   const [isBootstrapping, setIsBootstrapping] = useState(Boolean(getToken()));
   const [cartCount, setCartCount] = useState(0);
+  const [deliveryLocation, setDeliveryLocationState] = useState(getStoredLocation);
 
   const applySession = (session) => {
     saveAuthSession(session);
@@ -21,6 +32,15 @@ export function AppProvider({ children }) {
     setUser(null);
     setToken(null);
     setCartCount(0);
+  };
+
+  const setDeliveryLocation = (location) => {
+    setDeliveryLocationState(location);
+    if (location) {
+      localStorage.setItem(LOCATION_KEY, JSON.stringify(location));
+    } else {
+      localStorage.removeItem(LOCATION_KEY);
+    }
   };
 
   const refreshCurrentUser = async () => {
@@ -53,6 +73,23 @@ export function AppProvider({ children }) {
     }
   };
 
+  const addToCart = async (menuItemId, restaurantId) => {
+    if (!getToken()) {
+      throw new Error("Please login to add to cart");
+    }
+
+    try {
+      const data = await apiRequest("/cart/items", {
+        method: "POST",
+        body: JSON.stringify({ menuItemId, restaurantId }),
+      });
+      await refreshCartCount();
+      return data;
+    } catch (error) {
+      throw error;
+    }
+  };
+
   useEffect(() => {
     if (token) {
       refreshCurrentUser();
@@ -74,8 +111,11 @@ export function AppProvider({ children }) {
       signOut,
       refreshCurrentUser,
       refreshCartCount,
+      addToCart,
+      deliveryLocation,
+      setDeliveryLocation,
     }),
-    [user, token, cartCount, isBootstrapping]
+    [user, token, cartCount, isBootstrapping, deliveryLocation]
   );
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

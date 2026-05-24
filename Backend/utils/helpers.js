@@ -1,3 +1,6 @@
+export const isValidObjectId = (id) =>
+  typeof id === "string" && /^[a-fA-F0-9]{24}$/.test(id);
+
 export const sanitizeUser = (user) => ({
   _id: user._id,
   fullName: user.fullName,

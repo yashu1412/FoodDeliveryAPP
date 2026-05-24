@@ -1,8 +1,8 @@
 .card {
-  background-color: var(--color-bg-card);
-  border-radius: var(--radius-lg);
+  background-color: var(--bg);
+  border-radius: var(--radius-xl);
   box-shadow: var(--shadow-sm);
-  transition: all var(--transition-bounce);
+  transition: all var(--transition-normal);
 }
 
 .card:hover {

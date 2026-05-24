@@ -11,6 +11,7 @@ import OrderHistory from './pages/OrderHistory'
 import OwnerDashboard from './pages/OwnerDashboard'
 import RiderDashboard from './pages/RiderDashboard'
 import AdminDashboard from './pages/AdminDashboard'
+import Profile from './pages/Profile'
 import ProtectedRoute from './components/ProtectedRoute'
 
 function App() {
@@ -24,7 +25,9 @@ function App() {
       <Route path="/cart" element={<Cart />} />
       <Route path="/checkout" element={<Checkout />} />
       <Route path="/orders" element={<OrderHistory />} />
+      <Route path="/tracking/:id" element={<OrderTracking />} />
       <Route path="/orders/:id/track" element={<OrderTracking />} />
+      <Route path="/profile" element={<Profile />} />
       
       <Route path="/owner-dashboard" element={
         <ProtectedRoute allowedRoles={["owner"]}>
